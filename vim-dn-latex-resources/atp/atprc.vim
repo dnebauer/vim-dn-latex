@@ -55,8 +55,8 @@ endtry
 
 " atp-vim overwrites CommandT mappings \l and \u
 " - let's provide alternate mappings \T and \U
-nnoremap <buffer> <silent> <Leader>T :CommandT<CR>|
-nnoremap <buffer> <silent> <Leader>U :CommandTBuffer<CR>|
+nnoremap <buffer> <silent> <Leader>T :CommandT<CR>
+nnoremap <buffer> <silent> <Leader>U :CommandTBuffer<CR>
 
 " use subdirectory for intermediate files
 " create symlink in main directory to pdf output file
