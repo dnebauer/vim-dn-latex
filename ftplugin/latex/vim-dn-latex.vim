@@ -606,7 +606,7 @@ function! s:getDir(type)
     let l:valid_types = {
                 \ 'atp'       : '',
                 \ 'beamer'    : '',
-                \ 'template'  : '',
+                \ 'templates' : '',
                 \ 'texmfhome' : '',
                 \ }
     if !has_key(l:valid_types, a:type)
@@ -624,7 +624,7 @@ function! s:getDir(type)
         let l:dir = s:plugin_resources_dir . '/atp'
     elseif a:type =~ 'beamer'
         let l:dir = s:plugin_resources_dir . '/beamer'
-    elseif a:type =~ 'template'
+    elseif a:type =~ 'templates'
         let l:dir = s:plugin_resources_dir . '/templates'
     elseif a:type =~ 'texmfhome'
         let l:dir = s:getTexmfhomeDir()
@@ -762,7 +762,7 @@ function! s:insertTemplate()
     let l:doc_type = s:getDocType()
     " get template for that doc type
     let l:template = s:getTemplate(l:doc_type)
-    if !l:template_dir | return | endif
+    if len(l:template) == 0 | return | endif
     " get data to be inserted into template
     let l:data_items = s:getDocData(l:doc_type)
     if !s:validVar(l:data_items, 'dt-items-trimmed') | return | endif
@@ -867,8 +867,8 @@ function! s:getTemplate(type)
     " variables
     let l:template_content = []
     let l:template_dir = s:getDir('templates')
-    if !isdirectory(l:template_dir) | return
-    let l:template_file = l:template_dir 
+    if !isdirectory(l:template_dir) | return | endif
+    let l:template_file = l:template_dir . '/'
                 \ . s:doc_type_info[a:type]['template']
     if !filereadable(l:template_file)
         call DNU_Error("Unable to read template '" . l:template_file . "'")
