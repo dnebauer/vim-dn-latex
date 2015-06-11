@@ -1,0 +1,15 @@
+% Frederiksberg unit ``ics'', Department of Computer Science (DIKU)
+% Morten Bonding Granlund, 2011-04-11
+
+\PassOptionsToPackage{nat}{beamerthemeKUsetup}
+\PassOptionsToPackage{lrimage=icstitlelrcorner,
+                      style=alternative}{beamerinnerthemeKUtitlepage}
+\PassOptionsToPackage{style=institute}{beamerouterthemeKUhead}
+
+\g@addto@macro\Frederiksberg@AfterPackages{
+  \ifx\KU@language\KU@dk
+    \institute{Datalogisk Institut}
+  \else
+    \institute{Department of Computer Science}
+  \fi
+}

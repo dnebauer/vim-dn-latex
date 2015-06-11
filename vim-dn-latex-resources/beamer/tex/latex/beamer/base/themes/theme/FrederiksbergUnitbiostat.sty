@@ -1,0 +1,21 @@
+% Frederiksberg unit "biostat", Department of Biostatistics (SUND)
+% Morten Larsen, 2009-09-01
+% After (non-Frederiksberg) beamer theme by Gunnar Hellmund
+
+% Here we set up things which can be changed by options given to Frederiksberg:
+\PassOptionsToPackage{sund}{beamerthemeKUsetup}
+\PassOptionsToPackage{style=institute}{beamerouterthemeKUhead}
+\PassOptionsToPackage{lrimage=biostattitlelrcorner,
+                      style=alternative}{beamerinnerthemeKUtitlepage}
+
+% Anything to be set up after all the theme packages have been processed
+% must go into the command Frederiksberg@AfterPackages
+\g@addto@macro\Frederiksberg@AfterPackages{
+  \ifx\beamer@shortinstitute\@empty
+    \ifx\KU@language\KU@dk
+      \institute{Biostatistisk Afdeling}
+    \else
+      \institute{Department of Biostatistics}
+    \fi
+  \fi
+}

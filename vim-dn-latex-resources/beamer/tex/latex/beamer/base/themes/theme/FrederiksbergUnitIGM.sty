@@ -1,0 +1,20 @@
+% Frederiksberg unit "IGM", The Department of Basic Sciences and Environment
+% (IGM) at LIFE.
+% Morten Larsen, 2010-08-17
+
+% Here we set up things which can be changed by options given to Frederiksberg:
+\PassOptionsToPackage{life}{beamerthemeKUsetup}
+\PassOptionsToPackage{lrimage=IGMstandard,
+                      style=alternative}{beamerinnerthemeKUtitlepage}
+
+% Anything to be set up after all the theme packages have been processed
+% must go into the command Frederiksberg@AfterPackages
+\g@addto@macro\Frederiksberg@AfterPackages{
+  \ifx\beamer@shortinstitute\@empty
+    \ifx\KU@language\KU@dk
+      \institute[Grundvidenskab og Milj\o]{Institut for Grundvidenskab og Milj\o}
+    \else
+      \institute[Basic Sciences and Environment]{Department of Basic Sciences and Environment}
+    \fi
+  \fi
+}

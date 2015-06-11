@@ -1,0 +1,15 @@
+% Frederiksberg unit ``imf'', Department of Mathematical Sciences (SCIENCE)
+% Rasmus Borup Hansen, 2009-09-11 -- picture modified by Sara Arklint, 2011-06-09
+
+\PassOptionsToPackage{nat}{beamerthemeKUsetup}
+\PassOptionsToPackage{lrimage=imftitlelrcorner,
+                      style=alternative}{beamerinnerthemeKUtitlepage}
+\PassOptionsToPackage{style=institute}{beamerouterthemeKUhead}
+
+\g@addto@macro\Frederiksberg@AfterPackages{
+  \ifx\KU@language\KU@dk
+    \institute{Institut for Matematiske Fag}
+  \else
+    \institute{Department of Mathematical Sciences}
+  \fi
+}

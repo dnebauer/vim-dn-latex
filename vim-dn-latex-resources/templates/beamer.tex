@@ -1,0 +1,75 @@
+% File: <FILENAME>
+% Created: <CREATED-DATE>
+% Author: <AUTHOR>
+% Description: <DESCRIPTION>
+% -------------------------------------
+
+% PREAMBLE
+
+% preamble suggested by beamer Frederiksberg user guide
+\documentclass[12pt,t]{beamer}
+\usepackage{pslatex}
+\usepackage[english]{babel}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[australian]{babel}
+\usepackage[iso,cleanlook,british]{isodate}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{xspace}
+\usepackage[overlay,absolute]{textpos} % provide textblock environment
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\frenchspacing
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+% portrait image to fill slide
+% params: 1=file, 2=horiz offset, 3=vert offset (offsets from top left)
+%         4=label
+\newcommand{\fullsizegraphicportrait}[3]{
+  \begin{textblock*}{0cm}(#2cm,#3cm)
+  \includegraphics[height=\paperheight]{% prevent reading by ctags parser
+    #1}
+  \label{% prevent reading by ctags parser
+    #4} 
+  \end{textblock*}
+}
+% landscape image to fill slide
+% params: 1=file, 2=horiz offset, 3=vert offset (offsets from top left)
+%         4=label
+\newcommand{\fullsizegraphiclandscape}[3]{
+  \begin{textblock*}{0cm}(#2cm,#3cm)
+  \includegraphics[width=\paperwidth]{% prevent reading by ctags parser
+    #1}
+  \label{% prevent reading by ctags parser
+    #4} 
+  \end{textblock*}
+}
+% customise \usetheme, \subtitle, \institute and maybe \date
+\usetheme[not@ku={<INSTITUTE>},
+TPlrimage={resources/logo},
+totalframes={hide},
+TPomitframeno,
+footstyle=low,
+wide]
+{Frederiksberg}
+\title{<TITLE>}
+\subtitle{}
+\author{<AUTHOR>}
+\institute{}
+\date[]{\today}
+
+
+% DOCUMENT
+
+\begin{document}
+
+% title
+\frame[plain]{\titlepage}
+
+<START>
+
+\end{document}

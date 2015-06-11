@@ -1,0 +1,129 @@
+% File: <FILENAME>
+% Created: <CREATED-DATE>
+% Author: <AUTHOR>
+% Description: <DESCRIPTION>
+% ---------------------------------------------------------
+
+% PREAMBLE
+
+% preamble for book
+\documentclass[a4paper,12pt]{book}
+% use utf8 input encoding
+% note: can use only utf8 input characters known to current font encoding
+\usepackage[utf8]{inputenc}
+% use kpfonts font
+\usepackage{kpfonts}
+% use T1 output encoding
+\usepackage[T1]{fontenc}
+% select language early so other packages know what language is used
+\usepackage[australian]{babel}
+% customise date format
+\usepackage[iso,cleanlook,english]{isodate}
+% set page and margin size
+\usepackage[a4paper,margin=1.0in]{geometry}
+% paragraphs demarcated with blank line
+\usepackage[parfill]{parskip}
+% do not like widows and orphans (default=150)
+\clubpenalty = 500
+\widowpenalty = 500
+% use french spacing (single spaces between sentences)
+\frenchspacing
+% access file name and path
+% - need to use tex compiler option '-recorder'
+%   in order to access absolute paths
+% - if using atp-vim can edit project.vim file to
+%   add option to variable b:atp_TexOptions, e.g.,
+%   "let b:atp_TexOptions = '-synctex=1,-recorder'"
+\usepackage[abspath]{currfile}
+% make logical branching easier
+\usepackage{ifthen}
+% some settings require pdftex extension
+% so need to know whether running pdftex in pdf mode
+\usepackage{ifpdf}
+% use jpg and png files with pdflatex
+\usepackage{graphicx}
+% convert eps files automatically
+\usepackage{epstopdf}
+% standard ams packages for maths
+\usepackage{amsmath,amsfonts,amssymb}
+% additional symbols
+\usepackage{textcomp,bbding,gensymb}
+% enable use of colour
+\usepackage{color}
+% enable underlining, overstriking, highlighting and small caps
+\usepackage{soul}
+% use author-year or numerical references and citations
+\usepackage{natbib}
+% add micro-typographic effects (pdftex only)
+\usepackage{microtype}
+% allow use of todo notes
+\usepackage{todonotes}
+% tables: of publication quality
+\usepackage{tabularx}
+\usepackage{booktabs}
+% tables: that can span multiple pages
+\usepackage{longtable}
+% provide 'xspace' which preserves space after macro name
+\usepackage{xspace}
+% customise headers and footers
+\usepackage{fancyhdr}
+% prettier urls
+\usepackage[hyphens]{url}
+% make number of last page available as 'LastPage' counter
+% use '\pageref*{LastPage}' to avoid it being made a link
+\usepackage{lastpage}
+% enhanced cross-referencing #1
+\usepackage{varioref}
+% convert references to hyperlinks
+% must be close to last: it redefines other package commands
+% set links to blue
+\usepackage{hyperref}
+\hypersetup{%
+  colorlinks=true,%
+  linkcolor=blue,%
+  citecolor=blue,%
+  filecolor=blue,%
+  urlcolor=blue,%
+}
+% enhanced cross-referencing #2
+% must be last
+\usepackage{cleveref}
+% document author
+\newcommand{\Author}{<AUTHOR>\xspace} 
+\author{\Author} 
+% document name
+\newcommand{\Title}{<TITLE>\xspace} 
+\title{\Title} 
+% date of compilation
+\date{\today} 
+% pdf fields
+\ifpdf
+  \hypersetup{%
+    pdfauthor={\Author},%
+    pdftitle={\Title},%
+    pdfkeywords={},%
+  } 
+\fi
+% header and footer
+% - 'fancyplain' use suppresses them in title, chapter or blank pages
+\pagestyle{fancyplain} 
+% - 'fancyhf{}' clears all existing headers and footers
+\fancyhf{} 
+% - centred, oblique header
+\chead{\fancyplain{}{\slshape \Title{}}}
+\renewcommand{\headrulewidth}{0.1pt} 
+% - centred, oblique footer
+\cfoot{\fancyplain{}{\slshape Page \thepage\ of \pageref*{LastPage}}}
+\renewcommand{\footrulewidth}{0.1pt}
+
+
+% DOCUMENT
+
+\begin{document}
+
+% title
+\maketitle
+
+<START>
+
+\end{document}

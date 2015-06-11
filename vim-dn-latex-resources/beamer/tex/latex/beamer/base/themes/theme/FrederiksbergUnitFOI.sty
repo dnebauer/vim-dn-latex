@@ -1,0 +1,19 @@
+% Frederiksberg unit "FOI", Institute of Food and Resource Economics (LIFE)
+% Morten Larsen, 2009-08-28
+
+% Here we set up things which can be changed by options given to Frederiksberg:
+\PassOptionsToPackage{life}{beamerthemeKUsetup}
+\PassOptionsToPackage{lrimage=FOItitlelrcorner,
+                      style=alternative}{beamerinnerthemeKUtitlepage}
+
+% Anything to be set up after all the theme packages have been processed
+% must go into the command Frederiksberg@AfterPackages
+\g@addto@macro\Frederiksberg@AfterPackages{
+  \ifx\beamer@shortinstitute\@empty
+    \ifx\KU@language\KU@dk
+      \institute{F\o devare\o konomisk Institut}
+    \else
+      \institute{Institute of Food and Resource Economics}
+    \fi
+  \fi
+}

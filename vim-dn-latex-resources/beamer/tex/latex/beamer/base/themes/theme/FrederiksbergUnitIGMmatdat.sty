@@ -1,0 +1,27 @@
+% Frederiksberg unit "IGMmatdat", The Mathematics and Computer Science group
+% at the Department of Basic Sciences and Environment (IGM) at LIFE.
+% Morten Larsen, 2009-08-28
+
+% Here we set up things which can be changed by options given to Frederiksberg:
+\PassOptionsToPackage{life}{beamerthemeKUsetup}
+\PassOptionsToPackage{lrimage=IGMmatdatWhiteboard}{beamerinnerthemeKUtitlepage}
+\PassOptionsToPackage{style=institute}{beamerouterthemeKUhead}
+
+% Here we define a new option for Frederiksberg itself:
+\g@addto@macro\Frederiksberg@AfterOptionsDefinition{
+  \DeclareOptionBeamer{henrik}{%
+    \PassOptionsToPackage{lrimage=IGMmatdatHenrik}{beamerinnerthemeKUtitlepage}
+  }
+}
+
+% Anything to be set up after all the theme packages have been processed
+% must go into the command Frederiksberg@AfterPackages
+\g@addto@macro\Frederiksberg@AfterPackages{
+  \ifx\beamer@shortinstitute\@empty
+    \ifx\KU@language\KU@dk
+      \institute[Grundvidenskab og Milj\o]{Institut for Grundvidenskab og Milj\o\\Faggruppe for Matematik og Datalogi}
+    \else
+      \institute[Basic Sciences and Environment]{Department of Basic Sciences and Environment\\Mathematics \& Computer Science group}
+    \fi
+  \fi
+}

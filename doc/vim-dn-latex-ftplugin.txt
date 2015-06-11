@@ -1,0 +1,168 @@
+*vim-dn-latex-ftplugin.txt.in*	For Vim version 7.3	Last changed: 2012 October 14
+
+DN's latex filetype plugin                          *dn-latex-ftplugin.txt*                       
+-------------------------------------------------------------------------
+                                              *ft-latex-dn-plugin-contents*
+1. Contents
+
+    1. Contents ............................. |ft-latex-dn-plugin-contents|
+    2. Overview ............................. |ft-latex-dn-plugin-overview|
+    3. Dependencies ..................... |ft-latex-dn-plugin-dependencies|
+    4. Settings ............................. |ft-latex-dn-plugin-settings|
+    5. Functions ........................... |ft-latex-dn-plugin-functions|
+    6. Template ............................. |ft-latex-dn-plugin-template|
+    7. Command-T interaction ............... |ft-latex-dn-plugin-command-t|
+    8. Beamer ................................. |ft-latex-dn-plugin-beamer|
+    9. Ultisnips snippets .................. |ft-latex-dn-plugin-ultisnips|
+-------------------------------------------------------------------------
+                                *ft-latex-dn-plugin-overview*  *vim-dn-latex*
+2. Overview
+
+An auxiliary latex (tex) filetype plugin providing some useful features.
+-------------------------------------------------------------------------
+                                          *ft-latex-dn-plugin-dependencies*
+3. Dependencies
+
+It is assumed the primary LaTeX plugin being used is Automatic LaTeX
+Plugin for Vim. In fact, this plugin provides an atprc file that can be
+used as the primary user atp configuration file, or can be called from
+it.
+
+Not all features of this plugin require ATP, but some do.
+
+This plugin also assumes the availability of the vim-dn-utils plugin. It
+relies on variables and functions provided by it.
+-------------------------------------------------------------------------
+                                              *ft-latex-dn-plugin-settings*
+4. Settings
+
+This plugin changes a number of settings.
+
+Tab-related:
+
+    tabstop = 2
+    softabstop = 2
+    shiftwidth = 2
+    expantab = ON
+
+Wrap at 72 chars:
+
+    textwidth = 72
+    formatoptions -= la
+    formatoptions += tc
+-------------------------------------------------------------------------
+                                             *ft-latex-dn-plugin-functions*
+5. Functions
+
+                                                    *DNL-InsertSpecialChar*
+DNL_InsertSpecialChar([insert_mode])
+	purpose: insert special character
+	params:  1 - insert mode <default=false> <optional> [boolean]
+	insert:  special character
+	return:  nil
+	note:    uses Dict variable with direct unicode characters
+	         and so requires vim environment in which these can
+	         be displayed
+
+                                                            *dn-mapping-is*
+This function is mapped by default to '<LocalLeader>is', usually '\is',
+in both Insert and Normal modes.
+
+                                                           *DNL-AlignTable*
+DNL_AlignTable([insert_mode])
+	purpose: arrange columns in table source
+	params:  1 - insert mode <default=false> <optional> [boolean]
+	insert:  spaces as required
+	return:  nil
+	note:    assumes table source has structure:
+	           \begin{tabular}{xxx}
+	           \toprule
+	           Header 1 & Header 2 & Header 3 \\
+	           \midrule
+	           Content 1 & Content 2 & Content 3 \\
+	           ...
+	           \bottomrule
+	           \end{tabular}
+	note:    the function must be called from within a table
+	note:    the begin and end tabular environment commands are used
+	         to find the start and end of the table
+	note:    the function uses column separators ("&") to locate
+	         columns; it ignores escaped ampersands but unescaped
+	         ampersands in comments will cause unpredictable behaviour
+
+                                                               *mapping-at*
+This function is mapped by default to '<LocalLeader>at', usually '\at',
+in both Insert and Normal modes.
+-------------------------------------------------------------------------
+                                             *ft-latex-dn-plugin-command-t*
+7. Command-T interaction
+
+The two mappings supplied by plugin Command-T are \l and \u which call,
+respectively, commands :CommandT and :CommandTBuffer.  These mappings are
+used by ATP.  Command-T is well behaved and does not overwrite the ATP
+mappings.
+
+To make the Command-T mappings available while editing a tex file this
+plugin creates alternate mappings <Leader>T and <Leader>U, usually \T and
+\U, for :CommandT and :CommandTBuffer, respectively.  These plugins are
+defined only for the tex file buffer.
+
+Note: When invoking vim with the name of a non-existent file these
+mappings are created by the initialisation vimscript described above.
+
+Note: This is implemented in the atprc file provided.
+-------------------------------------------------------------------------
+                                                *ft-latex-dn-plugin-beamer*
+8. Beamer
+
+These additional beamer themes are provided: Air, Amsterdam, Bunsen,
+Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL.
+Theme files are installed to the
+@beamerbase_dir@ subtree.
+Any documentation or example files are installed to
+@data_dir@/doc/texmf/latex/beamer/THEME.
+-------------------------------------------------------------------------
+                                             *ft-latex-dn-plugin-ultisnips*
+9. Ultisnips snippets
+
+Custom ultisnips snippets are provided.
+
+begin: generic environment wrapper
+tab: table environment
+fig: figure environment
+subfig: figure with two subfigures
+sfigadd: additional subfigure
+eqn: equation
+eqa: equation array
+eqd: math environment ("$ ${1} $")
+enum: enumerate environment
+itemize: itemize environment
+quote: quote environment
+desc: description environment
+chap: chapter environment
+sec: section environment
+sub: subsection environment
+subs: subsubsection environment
+par: paragraph environment
+subp: subparagraph environment
+itd: item with description
+refchar: chaper reference
+reffig: figure reference
+reftab: table reference
+refsec: section reference
+refpag: page reference
+citen: name citation
+cite: citation
+verbatim: verbatim environment
+verb: verb
+lrp: left and right parentheses
+lrb: left and right braces
+lra: left and right angle brackets
+frame: empty beamer frame
+frlist: beamer frame with itemised list
+frfig: beamer frame with figure
+frsubfig: beamer frame with multiple subfigures
+frfullfig: beamer frame with full size image
+beamerbox: framed/boxed text
+-------------------------------------------------------------------------
+ vim:tw=78:fo=tcq2:ts=4:ft=help:
