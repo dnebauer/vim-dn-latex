@@ -419,11 +419,8 @@ function! DNL_Initialise(...)
                 \ && a:1['insert_template']
         let l:insert_template = b:dn_true
     endif
-    " deactivate <Right> key mapping as it interferes with Ctrl-J mapping
-    call s:deactivateRightMapping()
-    " avoid atp-vim collisions with CommandT
-    nnoremap <buffer> <silent> <Leader>T :CommandT<CR>|
-    nnoremap <buffer> <silent> <Leader>U :CommandTBuffer<CR>|
+    " fix vim settings
+    call s:vimSettings()
     " make sure beamer files are installed
     call s:syncBeamer()
     " insert template and user-supplied data
@@ -559,6 +556,20 @@ function! DNL_AlignTable(...)
     call setpos('.', l:save_cursor)
     " return to calling mode
     if l:insert | call DNU_InsertMode() | endif
+endfunction                                                    " }}}2
+" Function: s:vimSettings                                        {{{2
+" Purpose:  adjust vim settings
+" Params:   nil
+" Insert:   nil
+" Return:   nil
+function! s:vimSettings()
+    setlocal tabstop=2
+    setlocal softtabstop=2
+    setlocal shiftwidth=2
+    setlocal expandtab=on
+    setlocal textwidth=72
+    setlocal formatoptions-=la
+    setlocal formatoptions+=tc
 endfunction                                                    " }}}2
 " Function: s:resourcesDirIsSet                                  {{{2
 " Purpose:  set script variable for plugin resources dir
