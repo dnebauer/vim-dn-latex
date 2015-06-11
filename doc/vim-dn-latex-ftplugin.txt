@@ -41,9 +41,9 @@ This plugin changes a number of settings.
 Tab-related:
 
     tabstop = 2
-    softabstop = 2
+    softtabstop = 2
     shiftwidth = 2
-    expantab = ON
+    expandtab = ON
 
 Wrap at 72 chars:
 
@@ -117,10 +117,8 @@ Note: This is implemented in the atprc file provided.
 
 These additional beamer themes are provided: Air, Amsterdam, Bunsen,
 Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL.
-Theme files are installed to the
-@beamerbase_dir@ subtree.
-Any documentation or example files are installed to
-@data_dir@/doc/texmf/latex/beamer/THEME.
+Theme files are installed to the TEXMFHOME directory as reported by
+'kpsewhich'.
 -------------------------------------------------------------------------
                                              *ft-latex-dn-plugin-ultisnips*
 9. Ultisnips snippets
