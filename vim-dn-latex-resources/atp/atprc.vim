@@ -94,35 +94,83 @@ if has('unix') && !exists('b:atprc_read_once')
         " if here then no match found
         return b:dn_false
     endfunction
-    function! DnaSetUsersWorkingDirPreference(preference)
+    function! DnaSetUserPreference(preference)
         let b:dna_atprc_file = '.dna_atprc'
         let l:content = [
                     \   'WorkingDir ' . a:preference
                     \ ]
         call writefile(l:content, b:dna_atprc_file)
     endfunction
-    function! DnaGetUsersWorkingDirPreference()
+    function! DnaGetUserPreference()
         let l:msg = 'Use intermediate subdirectory '
                     \ . 'and symlink to pdf output?'
         let l:wants = confirm(b:msg, "&Yes\n&No", 1, 'Q')
         if l:wants != b:dn_true | let b:wants = b:dn_false | endif
         return l:wants
     endfunction
+    function! DnaSubdirExists()
+        return isdirectory(b:atp_OutDir)
+    endfunction
+    function! DnaPdfLinkExists()
+        call system('test -L ' . b:dn_outfile)
+        if v:shell_error
+            return b:dn_false
+        else
+            return b:dn_true
+        endif
+    endfunction
+    function! DnaSubdirSetUp()
+        return DnaSubdirExists() && DnaPdfLinkExists()
+    endfunction
+    function! DnaRemoveLinkFile()
+        call DnaRunCommand('rm -f ' . b:dn_outfile)
+        return !DnaSubdirExists()
+    endfunction
+    function! DnaCreateLink()
+        call DnaRunCommand('ln -s ' . b:dn_target . ' ' . b:dn_outfile)
+        return DnaPdfLinkExists()
+    endfunction
+    function! DnaRemoveSubdir()
+        call DnaRunCommand('rm -fr ' . b:atp_OutDir)
+        return !DnaSubdirExists()
+    endfunction
+    " set vars
+    let b:dn_workdir = 'working'         " subdir to hold intermediate files
+    let b:atp_OutDir = b:atp_ProjectDir . '/' . b:dn_workdir
+    let b:dn_outfile = expand('%:r') . '.pdf'
+    let b:dn_target = b:dn_workdir . '/' . b:dn_outfile
     " decide whether to create subdir and symlink
     let b:make_subdir = b:dn_false
     if DnaAtprcFileExists()    " user has set preference
         let b:make_subdir = DnaUseWorkingDir()
     else    " user has not set preference
-        let b:make_subdir = DnaGetUsersWorkingDirPreference()
-        call DnaSetUsersWorkingDirPreference(l:make_subdir)
+        " but working directory and pdf link may already exist
+        if DnaSubdirSetUp()    " fully set up - accept as preference
+            let b:make_subdir = b:dn_true
+        elseif DnaSubdirExists() || DnaPdfLinkExists()
+            " partially set up - user must decide
+            if DnaSubdirExists()
+                echo 'Working directory already exists but pdf link does not'
+            else
+                echo 'Pdf link exists but working directory does not'
+            endif
+            let b:make_subdir = DnaGetUserPreference()
+        else    " neither exists - user must decide
+            let b:make_subdir = DnaGetUserPreference()
+        endif
+        call DnaSetUserPreference(l:make_subdir)
     endif
-    " first try to create subdir
+    " if user chose not to use subdir, delete any previous setup
+    if !b:make_subdir
+        if DnaSubdirExists()
+            call DnaRemoveSubdir()
+        endif
+        if DnaPdfLinkExists()
+            call DnaRemoveLinkFile()
+        endif
+    endif
+    " if user chose to use subdir, first try to create subdir
     if b:make_subdir
-        " set vars
-        let b:dn_workdir = 'working'         " subdir to hold intermediate files
-        let b:atp_OutDir = b:atp_ProjectDir . '/' . b:dn_workdir
-        let b:dn_outfile = expand('%:r') . '.pdf'
-        let b:dn_target = b:dn_workdir . '/' . b:dn_outfile
         " create subdirectory
         if !isdirectory(b:atp_OutDir)
             if !mkdir(b:atp_OutDir)
@@ -137,14 +185,14 @@ if has('unix') && !exists('b:atprc_read_once')
         " cannot use 'filereadable(b:dn_outfile)' because it returns true on symlink
         "   only if both link and target are present - it cannot detect case where
         "   link is present but target is not; use 'system(test -L)' instead
-        if !DnaRunCommand('test -L ' . b:dn_outfile)
+        if !DnaPdfLinkExists()
             " remove any existing file (not a symlink) of same name
             if filereadable(b:dn_outfile)
-                call DnaRunCommand('rm -f ' . b:dn_outfile)
+                call DnaRemoveLinkFile()
             endif
             " now create link
             " - works even in absence of target file
-            if !DnaRunCommand('ln -s ' . b:dn_target . ' ' . b:dn_outfile)
+            if !DnaCreateLink()
                 echoerr 'Unable to create symlink to target pdf file'
             endif
         endif
@@ -156,8 +204,8 @@ if has('unix') && !exists('b:atprc_read_once')
     " tidy up
     unlet! b:dn_workdir b:msg b:dn_outfile b:dn_target b:dn_error
     delfunction DnaRunCommand    | delfunction DnaAtprcFileExists
-    delfunction DnaUseWorkingDir | delfunction DnaSetUsersWorkingDirPreference
-    delfunction DnaGetUsersWorkingDirPreference
+    delfunction DnaUseWorkingDir | delfunction DnaSetUserPreference
+    delfunction DnaGetUserPreference
 endif
 
 " enable use of ':Bibtex' command when there is no 'aux' file
