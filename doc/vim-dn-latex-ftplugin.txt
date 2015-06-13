@@ -1,26 +1,28 @@
-*vim-dn-latex-ftplugin.txt.in*	For Vim version 7.3	Last changed: 2012 October 14
+*vim-dn-latex-ftplugin.txt*                             For Vim version 7.4
 
-DN's latex filetype plugin                          *dn-latex-ftplugin.txt*                       
+DN's latex filetype plugin                              *dn-latex-ftplugin*
 -------------------------------------------------------------------------
-                                              *ft-latex-dn-plugin-contents*
+                                                        *dn-latex-contents*
 1. Contents
 
-    1. Contents ............................. |ft-latex-dn-plugin-contents|
-    2. Overview ............................. |ft-latex-dn-plugin-overview|
-    3. Dependencies ..................... |ft-latex-dn-plugin-dependencies|
-    4. Settings ............................. |ft-latex-dn-plugin-settings|
-    5. Functions ........................... |ft-latex-dn-plugin-functions|
-    6. Template ............................. |ft-latex-dn-plugin-template|
-    7. Command-T interaction ............... |ft-latex-dn-plugin-command-t|
-    8. Beamer ................................. |ft-latex-dn-plugin-beamer|
-    9. Ultisnips snippets .................. |ft-latex-dn-plugin-ultisnips|
+     1. Contents ...................................... |dn-latex-contents|
+     2. Overview ...................................... |dn-latex-overview|
+     3. Dependencies .............................. |dn-latex-dependencies|
+     4. Initialisation .................    ......... |dn-latex-initialise|
+     5. Settings ...................................... |dn-latex-settings|
+     6. Functions .................................... |dn-latex-functions|
+     7. Templates .................................... |dn-latex-templates|
+     8. Command-T interaction ........................ |dn-latex-command-t|
+     9. Beamer .......................................... |dn-latex-beamer|
+    10. Ultisnips snippets ........................... |dn-latex-ultisnips|
+    11. ATP integration .................................... |dn-latex-atp|
 -------------------------------------------------------------------------
-                                *ft-latex-dn-plugin-overview*  *vim-dn-latex*
+                                          *dn-latex-overview*  *vim-dn-latex*
 2. Overview
 
 An auxiliary latex (tex) filetype plugin providing some useful features.
 -------------------------------------------------------------------------
-                                          *ft-latex-dn-plugin-dependencies*
+                                                    *dn-latex-dependencies*
 3. Dependencies
 
 It is assumed the primary LaTeX plugin being used is Automatic LaTeX
@@ -31,28 +33,44 @@ it.
 Not all features of this plugin require ATP, but some do.
 
 This plugin also assumes the availability of the vim-dn-utils plugin. It
-relies on variables and functions provided by it.
+relies on variables and functions provided by it. It contributes to the
+dn-utils help system that is triggered by <Leader>hh, usually \hh.
 -------------------------------------------------------------------------
-                                              *ft-latex-dn-plugin-settings*
-4. Settings
+                                                      *dn-latex-initialise*
+4. Initialiation
+
+The plugin provides the function 'DNL_Initialiase' which can be used in
+a vim configuration file to initialise a tex document. It synchronises
+beamer settings (see |dn-latex-beamer|) and, depending on the argument
+provided to the function, can insert a template into the file (see
+|dn-latex-templates|).
+
+                                                           *DNL-Initialise*
+DNL_Initialise([{'insert_template': 0|1}])
+	purpose: initialise file (sync beamer files and insert template)
+	params:  1 - whether to insert template
+                 <default='insert_template':false> <optional> [Dict]
+	insert:  template, if requested
+	return:  nil
+-------------------------------------------------------------------------
+                                                        *dn-latex-settings*
+5. Settings
 
 This plugin changes a number of settings.
 
 Tab-related:
-
     tabstop = 2
     softtabstop = 2
     shiftwidth = 2
     expandtab = ON
 
-Wrap at 72 chars:
-
+Automatic paragraph formatting:
     textwidth = 72
     formatoptions -= la
     formatoptions += tc
 -------------------------------------------------------------------------
-                                             *ft-latex-dn-plugin-functions*
-5. Functions
+                                                       *dn-latex-functions*
+6. Functions
 
                                                     *DNL-InsertSpecialChar*
 DNL_InsertSpecialChar([insert_mode])
@@ -64,9 +82,9 @@ DNL_InsertSpecialChar([insert_mode])
 	         and so requires vim environment in which these can
 	         be displayed
 
-                                                            *dn-mapping-is*
-This function is mapped by default to '<LocalLeader>is', usually '\is',
-in both Insert and Normal modes.
+                                                      *dn-latex-mapping-is*
+This function is mapped by default to '<Leader>is', usually '\is', in
+both Insert and Normal modes.
 
                                                            *DNL-AlignTable*
 DNL_AlignTable([insert_mode])
@@ -90,21 +108,36 @@ DNL_AlignTable([insert_mode])
 	         columns; it ignores escaped ampersands but unescaped
 	         ampersands in comments will cause unpredictable behaviour
 
-                                                               *mapping-at*
-This function is mapped by default to '<LocalLeader>at', usually '\at',
-in both Insert and Normal modes.
+                                                      *dn-latex-mapping-at*
+This function is mapped by default to '<Leader>at', usually '\at', in
+both Insert and Normal modes.
 -------------------------------------------------------------------------
-                                             *ft-latex-dn-plugin-command-t*
-7. Command-T interaction
+                                                       *dn-latex-templates*
+7. Templates
 
+Templates are provided for article, report, book and beamer presentation
+documents. On opening a new tex file the user selects the document type
+and has the opportunity to enter document author, title and description.
+For beamer presentations the user can also enter institute. An
+appropriate template is inserted and the values replace tokens in the
+templates.
+
+This functionality is enabled by calling the DNL_Initialise function with
+appropriate argument (see |dn-latex-initialise| and |DNL-Initialise| for
+details).
+-------------------------------------------------------------------------
+                                                       *dn-latex-command-t*
+8. Command-T interaction
+
+                                   *dn-latex-mapping-U*  *dn-latex-mapping-T*
 The two mappings supplied by plugin Command-T are \l and \u which call,
-respectively, commands :CommandT and :CommandTBuffer.  These mappings are
-used by ATP.  Command-T is well behaved and does not overwrite the ATP
+respectively, commands :CommandT and :CommandTBuffer. These mappings are
+used by ATP. Command-T is well behaved and does not overwrite the ATP
 mappings.
 
 To make the Command-T mappings available while editing a tex file this
 plugin creates alternate mappings <Leader>T and <Leader>U, usually \T and
-\U, for :CommandT and :CommandTBuffer, respectively.  These plugins are
+\U, for :CommandT and :CommandTBuffer, respectively. These plugins are
 defined only for the tex file buffer.
 
 Note: When invoking vim with the name of a non-existent file these
@@ -112,16 +145,22 @@ mappings are created by the initialisation vimscript described above.
 
 Note: This is implemented in the atprc file provided.
 -------------------------------------------------------------------------
-                                                *ft-latex-dn-plugin-beamer*
-8. Beamer
+                                                          *dn-latex-beamer*
+9. Beamer
 
 These additional beamer themes are provided: Air, Amsterdam, Bunsen,
 Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL.
-Theme files are installed to the TEXMFHOME directory as reported by
-'kpsewhich'.
+The theme files are located in the vim-dn-latex-resources/beamer plugin
+subdirectory.
+
+The theme files are installed to the TEXMFHOME directory as reported by
+'kpsewhich'. File installation is done by 'rsync'. If either utility is
+unavailable the beamer files are not synchronised.
+
+Although there are a large number of file 
 -------------------------------------------------------------------------
-                                             *ft-latex-dn-plugin-ultisnips*
-9. Ultisnips snippets
+                                                       *dn-latex-ultisnips*
+10. Ultisnips snippets
 
 Custom ultisnips snippets are provided.
 
@@ -162,5 +201,75 @@ frfig: beamer frame with figure
 frsubfig: beamer frame with multiple subfigures
 frfullfig: beamer frame with full size image
 beamerbox: framed/boxed text
+-------------------------------------------------------------------------
+                                                             *dn-latex-atp*
+11. ATP integration
+
+The Automatic LaTeX Plugin is a latex plugin for latex (project page:
+http://atp-vim.sourceforge.net/, repo: https://github.com/coot/atp_vim).
+
+This ftplugin provides a configuration file for ATP. The file can be used
+as the base configuration file for ATP or can be sourced by it. The
+configuration file is located in the vim-dn-latex-resources/atp directory
+of the plugin.
+
+The configuration file has the following features:
+
+                                                   *dn-latex-atp-bibsearch*
+Sets ATP to use vim regular expression syntax rather than python
+completion (by setting g:atp_bibsearch to 'vim').
+
+                                            *dn-latex-mapping-environments*
+                                                       *dn-latex-mapping-E*
+Provides shortcuts for moving between environments. Moving to the next
+environment is mapped to '>E' in Normal mode. Moving to the previous
+environment is mapped to '<E' in Normal mode.
+
+                                                *dn-latex-atp-progress-bar*
+Sets progress bar to display on tex compilation (by setting
+g:atp_ProgressBar to true and g:atp_statusNotif to true).
+
+                                                    *dn-latex-atp-lualatex*
+Switches to the lualatex engine (by setting variable b:atp_TexCompiler to
+'lualatex').
+
+                                                    *dn-latex-atp-recorder*
+Sets the compilation switch '-recorder' (by adding it to the
+b:atp_TexOptions variable).
+
+                                   *dn-latex-mapping-U*  *dn-latex-mapping-T*
+Plays nice with the Command-T plugin. The Command-T plugin provides
+mappings for <Leader>l and <Leader>u (defaults to \l and \u) which call
+commands 'CommandT' and 'CommandTBuffer'. ATP also maps to <Leader> and
+<Leader>u. Command-T, however, is well behaved and does not overwrite the
+ATP mappings. 
+
+To make the Command-T mappings available while editing a tex file this
+configuration file creates alternate mappings <Leader>T and <Leader>U,
+usually \T and \U, for :CommandT and :CommandTBuffer, respectively.
+These plugins are defined only for the buffer.
+
+                                                   *dn-latex-atp-ultisnips*
+Play nice with the UltiSnips plugin. Both UltiSnips and ATP provide
+mappings for <C-j> and <C-k>. The ATP mappings are local to the buffer
+while the UltiSnips mappings are global. Removing the local ATP mappings
+leaves the UltiSnips amppings intact.
+
+Also deactivates the <Right> mapping as it interferes with the <C-j>
+mapping.
+
+                                                 *dn-latex-atp-working-dir*
+Optionally configures vim project (ATP considers every directory to be
+a 'project') to use a subdirectory for compilation. The subdirectory is
+named 'working'. For each project the user chooses whether or not to use
+a working directory. If so, the working directory is created and in the
+project directory a symlink is created to the output pdf file in the
+working directory.
+
+The user's choice is recorded in a hidden file ('.dna_atprc') at file
+creation time so the user is not asked when the file is subsequently
+opened. If the user later changes their mind about use of a working
+subdirectory they simply have to delete the '.dna_atprc' file and reopen
+the project file. The user will be asked again for their preference.
 -------------------------------------------------------------------------
  vim:tw=78:fo=tcq2:ts=4:ft=help:

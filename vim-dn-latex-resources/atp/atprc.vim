@@ -10,8 +10,8 @@
 let g:atp_bibsearch='vim'
 
 " jump out of current environment to next/previous one
-map <buffer> <silent> >E <Plug>JumptoNextEnvironmentzz
-map <buffer> <silent> <E <Plug>JumptoPreviousEnvironmentzz
+nmap <buffer> <silent> >E <Plug>JumptoNextEnvironmentzz
+nmap <buffer> <silent> <E <Plug>JumptoPreviousEnvironmentzz
 
 " show progress information on tex compilation
 let g:atp_ProgressBar=b:dn_true
@@ -81,18 +81,18 @@ if has('unix') && !exists('b:atprc_read_once')
         if !DnaAtprcFileExists()
             return b:dn_false
         endif
+        let l:retval = b:dn_false
         let l:contents = readfile(b:dna_atprc_file)
         for l:line in l:contents
             let l:tokens = split(l:line, ' ')
             let l:tokens = filter(l:tokens, "v:val !~ '^$'")
             " must be ['workingdir',<nonzero>]
-            if len(l:tokens) !=   2              | continue | endif
-            if l:tokens[0]   !~?  '^workingdir$' | continue | endif
-            if l:tokens[1]   !=   b:dn_false     | continue | endif
-            return b:dn_true
+            if len(l:tokens) == 2 && l:tokens[0] =~? '^workingdir$'
+                        \ && l:tokens[1] != b:dn_false
+                let l:retval = b:dn_true
+            endif
         endfor
-        " if here then no match found
-        return b:dn_false
+        return l:retval
     endfunction
     function! DnaSetUserPreference(preference)
         let b:dna_atprc_file = '.dna_atprc'
@@ -104,8 +104,8 @@ if has('unix') && !exists('b:atprc_read_once')
     function! DnaGetUserPreference()
         let l:msg = 'Use intermediate subdirectory '
                     \ . 'and symlink to pdf output?'
-        let l:wants = confirm(b:msg, "&Yes\n&No", 1, 'Q')
-        if l:wants != b:dn_true | let b:wants = b:dn_false | endif
+        let l:wants = confirm(l:msg, "&Yes\n&No", 1, 'Q')
+        if l:wants != b:dn_true | let l:wants = b:dn_false | endif
         return l:wants
     endfunction
     function! DnaSubdirExists()
@@ -158,7 +158,7 @@ if has('unix') && !exists('b:atprc_read_once')
         else    " neither exists - user must decide
             let b:make_subdir = DnaGetUserPreference()
         endif
-        call DnaSetUserPreference(l:make_subdir)
+        call DnaSetUserPreference(b:make_subdir)
     endif
     " if user chose not to use subdir, delete any previous setup
     if !b:make_subdir

@@ -400,11 +400,19 @@ let s:plugin_resources_dir = ''                                " }}}2
                                                                " }}}2
 
 " SETTINGS:                                                      {{{1
-" override existing tab settings                                 {{{2
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
-set expandtab                                                  " }}}2
+" tab settings                                                   {{{2
+setlocal tabstop=2
+setlocal softtabstop=2
+setlocal shiftwidth=2
+setlocal expandtab
+" automatic paragraph formatting
+" - +t: autowrap text at textwidth
+" - +c: include comments in autowrap
+" - +a: reformat paragraph if text inserted or deleted
+" - -t: do not exempt long lines from breaking at textwidth
+setlocal textwidth=72
+setlocal formatoptions+=tca
+setlocal formatoptions-=l                                      " }}}2
                                                                  
 " FUNCTIONS:                                                     {{{1
 " Function: DNL_Initialise                                       {{{2
@@ -419,10 +427,8 @@ function! DNL_Initialise(...)
                 \ && a:1['insert_template']
         let l:insert_template = b:dn_true
     endif
-    " fix vim settings
-    call s:vimSettings()
     " make sure beamer files are installed
-    call s:syncBeamer()
+    call DNL_SyncBeamer()
     " insert template and user-supplied data
     if l:insert_template
         call s:insertTemplate()
@@ -557,20 +563,6 @@ function! DNL_AlignTable(...)
     " return to calling mode
     if l:insert | call DNU_InsertMode() | endif
 endfunction                                                    " }}}2
-" Function: s:vimSettings                                        {{{2
-" Purpose:  adjust vim settings
-" Params:   nil
-" Insert:   nil
-" Return:   nil
-function! s:vimSettings()
-    setlocal tabstop=2
-    setlocal softtabstop=2
-    setlocal shiftwidth=2
-    setlocal expandtab=on
-    setlocal textwidth=72
-    setlocal formatoptions-=la
-    setlocal formatoptions+=tc
-endfunction                                                    " }}}2
 " Function: s:resourcesDirIsSet                                  {{{2
 " Purpose:  set script variable for plugin resources dir
 " Params:   nil
@@ -702,14 +694,14 @@ function! s:getTexmfhomeDir()
         endif
     endif
 endfunction                                                    " }}}2
-" Function: s:syncBeamer                                         {{{2
+" Function: DNL_SyncBeamer                                       {{{2
 " Purpose:  install beamer files in local texmf tree
 " Params:   nil
 " Insert:   nil
 " Return:   whether synchronised beamer files
 " Note:     unix-only
 " Note:     requires executables 'kpsewhich' and 'rsync'
-function! s:syncBeamer()
+function! DNL_SyncBeamer()
     " only implemented for unix
     if !has('unix')
         call DNU_Error('Beamer installation not yet implemented on this OS')
@@ -1113,10 +1105,6 @@ function! s:deactivateRightMapping()
 endfunction                                                    " }}}2
 
 " MAPPINGS:                                                      {{{1
-" alternative Command-T mappings: \T,\U [N]                      {{{2
-" original mappings are overridden by ATP
-nnoremap <buffer> <silent> <Leader>T :CommandT<CR>
-nnoremap <buffer> <silent> <Leader>U :CommandTBuffer<CR>
 "                                                                }}}2
 " \is -> DNL_InsertSpecialChar                                   {{{2
 " insert special character

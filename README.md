@@ -26,14 +26,12 @@ Plugin assumes you are using [atp-vim][atp]. An atp configuration file is provid
 *   Changes settings to play nice with CommandT and UltiSnips plugins
 *   Optionally configures project to use subdirectory ('working') for compilation.
 
-The user's choice regarding use of a subdirectory is recorded in a hidden file ('.dna_atprc') at file creation time so the user is not asked when the file is subsequently opened.
-
-See the file itself for further documentation.
+See `:h dn-latex-atp` for further details.
 
 Initialisation
 --------------
 
-The function `DNM_Initialise` is provided. It performs several tasks. A summary follows and further information is provided in vim documentation (see `dn-latex-ftplugin`).
+The function `DNM_Initialise` is provided. It performs several tasks. A summary follows and further information is provided in vim documentation (see `:h dn-latex-initialise` for further details).
 
 ### Beamer
 
@@ -43,7 +41,7 @@ Although there are a large number of files being synchronised, on a modern compu
 
 ### Templates
 
-Templates are provided for article, report, book and beamer presentation documents. On opening a new `.tex` file the user selects document type and enters document author, title and description. For beamer presentations the user also enters institute. An appropriate template is inserted and the values entered into the template.
+Templates are provided for article, report, book and beamer presentation documents. On opening a new tex file the user selects document type and enters document author, title and description. For beamer presentations the user also enters institute. An appropriate template is inserted and the values entered into the template.
 
 ### Settings
 
