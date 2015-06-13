@@ -35,7 +35,7 @@ The plugin includes files for beamer themes Air, Amsterdam, Bunsen, Frederiksber
 
 Provided vim-dn-latex-resources/beamer is on the runtimepath, the beamer files can be copied to the TEXMFHOME directory (usually ~/texmf on unix) by running the DNL_SyncBeamer function. This function determines the target directory with 'kpsewhich' and the files are copied (synchronised) by 'rsync'.
 
-To synchronise beamer files with each git-merge (which includes all git-pulls) it is possible to set up a template. In the vim-dn-latex-resources/git plugin subdirectory is a script that can be used as a global post-merge hook (it checks repository name and only acts on a vim-dn-latex repository merge/pull.)
+To synchronise beamer files with each git-merge (which includes all git-pulls) it is possible to set up a template. In the vim-dn-latex-resources/git plugin subdirectory is a script that can be used as a global post-merge hook (it checks the repository name and only acts on a vim-dn-latex repository merge/pull.)
 
 Templates
 ---------
