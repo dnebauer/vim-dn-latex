@@ -599,6 +599,7 @@ function! DNL_SyncBeamer()
         endif
     endif
     " guess we made it!
+    echo 'Beamer files synchronised'
     return b:dn_true
 endfunction                                                    " }}}2
 " Function: DNL_InsertTemplate                                   {{{2
