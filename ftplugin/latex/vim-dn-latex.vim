@@ -563,6 +563,63 @@ function! DNL_AlignTable(...)
     " return to calling mode
     if l:insert | call DNU_InsertMode() | endif
 endfunction                                                    " }}}2
+" Function: DNL_SyncBeamer                                       {{{2
+" Purpose:  install beamer files in local texmf tree
+" Params:   nil
+" Insert:   nil
+" Return:   whether synchronised beamer files
+" Note:     unix-only
+" Note:     requires executables 'kpsewhich' and 'rsync'
+function! DNL_SyncBeamer()
+    " only implemented for unix
+    if !has('unix')
+        call DNU_Error('Beamer installation not yet implemented on this OS')
+        return b:dn_false
+    endif
+    " need rsync
+    if !executable('rsync')
+        call DNU_Error('Need ''rsync'' to synchronise beamer files')
+        return b:dn_false
+    endif
+    " set source directory
+    let l:source = s:getDir('beamer')
+    if !isdirectory(l:source) | return b:dn_false | endif
+    " set target directory
+    let l:target = s:getDir('texmfhome')
+    if !isdirectory(l:target) | return b:dn_false | endif
+    " time to sync
+    " - capture change summary with '-i'
+    " - add terminal slashes as they are supposed to be important for rsync
+    let l:cmd = 'rsync -i -a --delete' . ' '
+                \ . shellescape(l:source . '/') . ' '
+                \ . shellescape(l:target . '/')
+    let l:changes = system(l:cmd)
+    if v:shell_error
+        call DNU_Error('Error occurred while syncing beamer files:')
+        call DNU_Error('------------------------------------------')
+        call DNU_Error(v:shell_error)
+        call DNU_Error('------------------------------------------')
+        return b:dn_false
+    endif
+    if !isdirectory(l:target)
+        call DNU_Error('Failed to create TEXMFHOME directory')
+        return b:dn_false
+    endif
+    " update local tex ls-R database if changes made to beamer files
+    if strlen(l:changes) > 0
+        let l:cmd = 'mktexlsr ' . strpart(l:target, 0, strlen(l:target)-1)
+        call system(l:cmd)
+        if v:shell_error
+            call DNU_Error('Error occurred while updating local tex ls-R db:')
+            call DNU_Error('------------------------------------------------')
+            call DNU_Error(v:shell_error)
+            call DNU_Error('------------------------------------------------')
+            return b:dn_false
+        endif
+    endif
+    " guess we made it!
+    return b:dn_true
+endfunction                                                    " }}}2
 " Function: s:resourcesDirIsSet                                  {{{2
 " Purpose:  set script variable for plugin resources dir
 " Params:   nil
@@ -693,63 +750,6 @@ function! s:getTexmfhomeDir()
             return b:dn_false
         endif
     endif
-endfunction                                                    " }}}2
-" Function: DNL_SyncBeamer                                       {{{2
-" Purpose:  install beamer files in local texmf tree
-" Params:   nil
-" Insert:   nil
-" Return:   whether synchronised beamer files
-" Note:     unix-only
-" Note:     requires executables 'kpsewhich' and 'rsync'
-function! DNL_SyncBeamer()
-    " only implemented for unix
-    if !has('unix')
-        call DNU_Error('Beamer installation not yet implemented on this OS')
-        return b:dn_false
-    endif
-    " need rsync
-    if !executable('rsync')
-        call DNU_Error('Need ''rsync'' to synchronise beamer files')
-        return b:dn_false
-    endif
-    " set source directory
-    let l:source = s:getDir('beamer')
-    if !isdirectory(l:source) | return b:dn_false | endif
-    " set target directory
-    let l:target = s:getDir('texmfhome')
-    if !isdirectory(l:target) | return b:dn_false | endif
-    " time to sync
-    " - capture change summary with '-i'
-    " - add terminal slashes as they are supposed to be important for rsync
-    let l:cmd = 'rsync -i -a --delete' . ' '
-                \ . shellescape(l:source . '/') . ' '
-                \ . shellescape(l:target . '/')
-    let l:changes = system(l:cmd)
-    if v:shell_error
-        call DNU_Error('Error occurred while syncing beamer files:')
-        call DNU_Error('------------------------------------------')
-        call DNU_Error(v:shell_error)
-        call DNU_Error('------------------------------------------')
-        return b:dn_false
-    endif
-    if !isdirectory(l:target)
-        call DNU_Error('Failed to create TEXMFHOME directory')
-        return b:dn_false
-    endif
-    " update local tex ls-R database if changes made to beamer files
-    if strlen(l:changes) > 0
-        let l:cmd = 'mktexlsr ' . strpart(l:target, 0, strlen(l:target)-1)
-        call system(l:cmd)
-        if v:shell_error
-            call DNU_Error('Error occurred while updating local tex ls-R db:')
-            call DNU_Error('------------------------------------------------')
-            call DNU_Error(v:shell_error)
-            call DNU_Error('------------------------------------------------')
-            return b:dn_false
-        endif
-    endif
-    " guess we made it!
-    return b:dn_true
 endfunction                                                    " }}}2
 " Function: s:insertTemplate                                     {{{2
 " Purpose:  insert template and ready it for use
