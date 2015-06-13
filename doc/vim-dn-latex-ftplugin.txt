@@ -115,29 +115,50 @@ both Insert and Normal modes.
 7. Templates
 
 Templates are provided for article, report, book and beamer presentation
-documents. On opening a new tex file the user selects the document type
-and has the opportunity to enter document author, title and description.
-For beamer presentations the user can also enter institute. An
-appropriate template is inserted and the values replace tokens in the
-templates.
+documents. Function DNL_InsertTemplate provides for the user to select
+document type and enter document author, title and description (and
+institute for Beamer presentations). An appropriate template is inserted
+and the values replace tokens in the templates.  
+                                                       *DNL_InsertTemplate*
+DNL_InsertTemplate()
+	purpose: insert template and replace tokens with user-provided values
+	params:  nil
+	insert:  template
+	return:  nil
 
-This functionality is enabled by calling the DNL_Initialise function with
-appropriate argument (see |dn-latex-initialise| and |DNL-Initialise| for
-details).
+This function is designed to be called from the vim configuration file 
+on the BufNewFile event.
 -------------------------------------------------------------------------
                                                           *dn-latex-beamer*
 8. Beamer
 
-These additional beamer themes are provided: Air, Amsterdam, Bunsen,
+The plugin includes files for beamer themes Air, Amsterdam, Bunsen,
 Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL.
-The theme files are located in the vim-dn-latex-resources/beamer plugin
-subdirectory.
+These files are located in the vim-dn-latex-resources/beamer plugin
+subdirectory. To install the themes in tex they need to copied into a
+latex directory.
 
-The theme files are installed to the TEXMFHOME directory as reported by
-'kpsewhich'. File installation is done by 'rsync'. If either utility is
-unavailable the beamer files are not synchronised.
+Provided vim-dn-latex-resources/beamer is on the runtimepath, the beamer
+files can be copied to the TEXMFHOME directory (usually ~/texmf on unix)
+by running the DNL_SyncBeamer function. This function determines the
+target directory with 'kpsewhich' and the files are copied (synchronised)
+by 'rsync'.
 
-Although there are a large number of file 
+                                                           *DNL-SyncBeamer*
+DNL_SyncBeamer()
+	purpose: sychronise plugin beamer files with TEXMFHOME directory
+	params:  nil
+	insert:  nil
+	return:  whether successful (boolean)
+	note:    on unix only
+    note:    on unix TEXMFHOME is usually ~/texmf
+    note:    requires utilities kpsewhich, rsync and mktexlsr
+
+To synchronise beamer files with each git-merge (which includes all
+git-pulls) it is possible to set up a template. In the
+vim-dn-latex-resources/git plugin subdirectory is a script that can be
+used as a global post-merge hook (it checks repository name and only acts
+on a vim-dn-latex repository merge/pull.)
 -------------------------------------------------------------------------
                                                        *dn-latex-ultisnips*
 9. UltiSnips snippets

@@ -28,22 +28,24 @@ Plugin assumes you are using [atp-vim][atp]. An atp configuration file is provid
 
 See `:h dn-latex-atp` for further details.
 
-Initialisation
---------------
+Beamer
+------
 
-The function `DNM_Initialise` is provided. It performs several tasks. A summary follows and further information is provided in vim documentation (see `:h dn-latex-initialise` for further details).
+The plugin includes files for beamer themes Air, Amsterdam, Bunsen, Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL. These files are located in the vim-dn-latex-resources/beamer plugin subdirectory. To install the themes in tex they need to copied into a latex directory.
 
-### Beamer
+Provided vim-dn-latex-resources/beamer is on the runtimepath, the beamer files can be copied to the TEXMFHOME directory (usually ~/texmf on unix) by running the DNL_SyncBeamer function. This function determines the target directory with 'kpsewhich' and the files are copied (synchronised) by 'rsync'.
 
-The plugin includes files for beamer themes Air, Amsterdam, Bunsen, Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL. These are synchronised with the TEXMFHOME directory (usually ~/texmf on unix systems). The target file directory is determined using 'kpsewhich' and the files synchronised with 'rsync'. Snchronisation does not occur if these tools are not available.
+To synchronise beamer files with each git-merge (which includes all git-pulls) it is possible to set up a template. In the vim-dn-latex-resources/git plugin subdirectory is a script that can be used as a global post-merge hook (it checks repository name and only acts on a vim-dn-latex repository merge/pull.)
 
-Although there are a large number of files being synchronised, on a modern computer system the delay is not noticeable.
+Templates
+---------
 
-### Templates
+Templates are provided for article, report, book and beamer presentation documents. Function DNL_InsertTemplate provides for the user to select document type and enter document author, title and description (and institute for Beamer presentations). An appropriate template is inserted and the values replace tokens in the templates.  
 
-Templates are provided for article, report, book and beamer presentation documents. On opening a new tex file the user selects document type and enters document author, title and description. For beamer presentations the user also enters institute. An appropriate template is inserted and the values entered into the template.
+This function is designed to be called from the vim configuration file on the BufNewFile event.
 
-### Settings
+Settings
+--------
 
 Adjust vim settings:
 
@@ -64,18 +66,16 @@ Adjust vim settings:
 Special characters
 ------------------
 
-Special characters can be selected from a menu and their tex codes inserted into the document. This function is bound to `LocalLeader-is` in normal and insert modes.
+Special characters can be selected from a menu and their tex codes inserted into the document. See `:h dn-latex-mapping-at` and `:h DNL-AlignTable` for more details.
 
 Align tables
 ------------
 
-Columns in a table can be automatically aligned. Certain conditions have to be followed in creating the table. See vimhelp ('DNL-AlignTable') for further details.
-
-This function is bound to `LocalLeader-at` in normal and insert modes.
+Columns in a table can be automatically aligned. Certain conditions have to be followed in creating the table. See `:h dn-latex-mapping-at` and `:h DNL-AlignTable` for further details.
 
 Custom snippets
 ---------------
 
-Custom ultisnips snippets are provided. See vimhelp ('ft-latex-dn-plugin-ultisnips') for details.
+Custom ultisnips snippets are provided. See `:h dn-latex-ultisnips` for details.
 
 [atp]: http://atp-vim.sourceforge.net/

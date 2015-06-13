@@ -415,25 +415,6 @@ setlocal formatoptions+=tca
 setlocal formatoptions-=l                                      " }}}2
                                                                  
 " FUNCTIONS:                                                     {{{1
-" Function: DNL_Initialise                                       {{{2
-" Purpose:  insert special character
-" Params:   1 - whether to insert template <default=false> <optional> [boolean]
-" Insert:   nil
-" Return:   nil
-function! DNL_Initialise(...)
-    " process arguments
-    let l:insert_template = b:dn_false
-    if a:0 > 0 && type(a:1) == type({}) && has_key(a:1, 'insert_template') 
-                \ && a:1['insert_template']
-        let l:insert_template = b:dn_true
-    endif
-    " make sure beamer files are installed
-    call DNL_SyncBeamer()
-    " insert template and user-supplied data
-    if l:insert_template
-        call s:insertTemplate()
-    endif
-endfunction                                                    " }}}2
 " Function: DNL_InsertSpecialChar                                {{{2
 " Purpose:  insert special character
 " Params:   1 - insert mode [default=<false>, optional, boolean]
@@ -620,6 +601,38 @@ function! DNL_SyncBeamer()
     " guess we made it!
     return b:dn_true
 endfunction                                                    " }}}2
+" Function: DNL_InsertTemplate                                   {{{2
+" Purpose:  insert template and ready it for use
+" Params:   nil
+" Insert:   template
+" Return:   nil
+" Note:     together with subsidiary functions uses script variables
+"           's:doc_types', 's:doc_type_info', 's:data_item_definitions'
+" Note:     directly uses functions 's:getDocType', 's:getDocData',
+"           's:getTemplate', 's:insertData', 's:validVar'
+function! DNL_InsertTemplate()
+    " get document type
+    let l:doc_type = s:getDocType()
+    " get template for that doc type
+    let l:template = s:getTemplate(l:doc_type)
+    if len(l:template) == 0 | return | endif
+    " get data to be inserted into template
+    let l:data_items = s:getDocData(l:doc_type)
+    if !s:validVar(l:data_items, 'dt-items-trimmed') | return | endif
+    " replace tokens in template with supplied data
+    let l:new_template = s:insertData(l:data_items, l:template)
+    if !s:validVar(l:new_template, 'template') | return | endif
+    " insert altered template into buffer
+    call append(0, l:new_template)
+    " move cursor to start token (and delete start token)
+    if search('<START>')
+        execute "normal df>"
+    else
+        call DNU_Warn("No start token '<START>' found")
+    endif
+    " save file
+    execute ':write!'
+endfunction                                                    " }}}2
 " Function: s:resourcesDirIsSet                                  {{{2
 " Purpose:  set script variable for plugin resources dir
 " Params:   nil
@@ -750,38 +763,6 @@ function! s:getTexmfhomeDir()
             return b:dn_false
         endif
     endif
-endfunction                                                    " }}}2
-" Function: s:insertTemplate                                     {{{2
-" Purpose:  insert template and ready it for use
-" Params:   nil
-" Insert:   template
-" Return:   nil
-" Note:     together with subsidiary functions uses script variables
-"           's:doc_types', 's:doc_type_info', 's:data_item_definitions'
-" Note:     directly uses functions 's:getDocType', 's:getDocData',
-"           's:getTemplate', 's:insertData', 's:validVar'
-function! s:insertTemplate()
-    " get document type
-    let l:doc_type = s:getDocType()
-    " get template for that doc type
-    let l:template = s:getTemplate(l:doc_type)
-    if len(l:template) == 0 | return | endif
-    " get data to be inserted into template
-    let l:data_items = s:getDocData(l:doc_type)
-    if !s:validVar(l:data_items, 'dt-items-trimmed') | return | endif
-    " replace tokens in template with supplied data
-    let l:new_template = s:insertData(l:data_items, l:template)
-    if !s:validVar(l:new_template, 'template') | return | endif
-    " insert altered template into buffer
-    call append(0, l:new_template)
-    " move cursor to start token (and delete start token)
-    if search('<START>')
-        execute "normal df>"
-    else
-        call DNU_Warn("No start token '<START>' found")
-    endif
-    " save file
-    execute ':write!'
 endfunction                                                    " }}}2
 " Function: s:getDocType                                         {{{2
 " Purpose:  get document type
