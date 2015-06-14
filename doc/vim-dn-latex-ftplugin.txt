@@ -5,16 +5,15 @@ DN's latex filetype plugin                              *dn-latex-ftplugin*
                                                         *dn-latex-contents*
 1. Contents
 
-     1. Contents ...................................... |dn-latex-contents|
-     2. Overview ...................................... |dn-latex-overview|
-     3. Dependencies .............................. |dn-latex-dependencies|
-     4. Initialisation .................    ......... |dn-latex-initialise|
-     5. Settings ...................................... |dn-latex-settings|
-     6. Functions .................................... |dn-latex-functions|
-     7. Templates .................................... |dn-latex-templates|
-     8. Beamer .......................................... |dn-latex-beamer|
-     9. UltiSnips snippets ........................... |dn-latex-ultisnips|
-    10. ATP integration .................................... |dn-latex-atp|
+    1. Contents ....................................... |dn-latex-contents|
+    2. Overview ....................................... |dn-latex-overview|
+    3. Dependencies ............................... |dn-latex-dependencies|
+    4. Settings ....................................... |dn-latex-settings|
+    5. Functions ..................................... |dn-latex-functions|
+    6. Templates ..................................... |dn-latex-templates|
+    7. Beamer ........................................... |dn-latex-beamer|
+    8. UltiSnips snippets ............................ |dn-latex-ultisnips|
+    9. ATP integration ..................................... |dn-latex-atp|
 -------------------------------------------------------------------------
                                           *dn-latex-overview*  *vim-dn-latex*
 2. Overview
@@ -35,25 +34,8 @@ This plugin also assumes the availability of the vim-dn-utils plugin. It
 relies on variables and functions provided by it. It contributes to the
 dn-utils help system that is triggered by <Leader>hh, usually \hh.
 -------------------------------------------------------------------------
-                                                      *dn-latex-initialise*
-4. Initialiation
-
-The plugin provides the function 'DNL_Initialiase' which can be used in
-a vim configuration file to initialise a tex document. It synchronises
-beamer settings (see |dn-latex-beamer|) and, depending on the argument
-provided to the function, can insert a template into the file (see
-|dn-latex-templates|).
-
-                                                           *DNL-Initialise*
-DNL_Initialise([{'insert_template': 0|1}])
-	purpose: initialise file (sync beamer files and insert template)
-	params:  1 - whether to insert template
-                 <default='insert_template':false> <optional> [Dict]
-	insert:  template, if requested
-	return:  nil
--------------------------------------------------------------------------
                                                         *dn-latex-settings*
-5. Settings
+4. Settings
 
 This plugin changes a number of settings.
 
@@ -69,7 +51,7 @@ Automatic paragraph formatting:
     formatoptions += tc
 -------------------------------------------------------------------------
                                                        *dn-latex-functions*
-6. Functions
+5. Functions
 
                                                     *DNL-InsertSpecialChar*
 DNL_InsertSpecialChar([insert_mode])
@@ -112,7 +94,7 @@ This function is mapped by default to '<Leader>at', usually '\at', in
 both Insert and Normal modes.
 -------------------------------------------------------------------------
                                                        *dn-latex-templates*
-7. Templates
+6. Templates
 
 Templates are provided for article, report, book and beamer presentation
 documents. Function DNL_InsertTemplate provides for the user to select
@@ -130,7 +112,7 @@ This function is designed to be called from the vim configuration file
 on the BufNewFile event.
 -------------------------------------------------------------------------
                                                           *dn-latex-beamer*
-8. Beamer
+7. Beamer
 
 The plugin includes files for beamer themes Air, Amsterdam, Bunsen,
 Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL.
@@ -141,9 +123,9 @@ latex directory.
 Provided vim-dn-latex-resources/beamer is on the runtimepath, the beamer
 files can be copied to the TEXMFHOME directory (usually ~/texmf on unix)
 by running the DNL_SyncBeamer function. This function determines the
-target directory with 'kpsewhich' and the files are copied (synchronised)
-by 'rsync'.
-
+target directory using 'kpsewhich', the files are copied (synchronised)
+by 'rsync', and the tex ls-R database updated by 'mktexlsr' (on some
+systems 'mktexlsr' is called 'texhash').  
                                                            *DNL-SyncBeamer*
 DNL_SyncBeamer()
 	purpose: sychronise plugin beamer files with TEXMFHOME directory
@@ -154,14 +136,44 @@ DNL_SyncBeamer()
     note:    on unix TEXMFHOME is usually ~/texmf
     note:    requires utilities kpsewhich, rsync and mktexlsr
 
-To synchronise beamer files with each git-merge (which includes all
-git-pulls) it is possible to set up a template. In the
-vim-dn-latex-resources/git plugin subdirectory is a script that can be
-used as a global post-merge hook (it checks repository name and only acts
-on a vim-dn-latex repository merge/pull.)
+                                                 *dn-latex-beamer-git-hook*
+Git provides hooks which trigger custom scripts when certain actions
+occur. The vim-dn-latex-resources/git plugin directory contains a bash
+script called 'post-merge' which is designed to be run after a git merge.
+The script, like the function, uses 'kpsewhich', 'rsync' and 'mktexlsr'
+to synchronise beamer files. It assumes the beamer files are located at
+$HOME/.vim/bundle/vim-dn-latex/vim-dn-latex-resources/beamer/. If the
+beamer files are installed in a different location the script needs to be
+edited accordingly.
+
+The script cannot be distributed with the repository in such a way as to
+automatically install on the client side. It must be installed by the
+user. There are several methods by which the script can be called during
+plugin updates (that include a git merge/pull). Some package managers,
+such as vundle, perform a git pull on every plugin update. The easiest
+method on a unix system to automate running the script after every git
+pull is:
+    # create template directory with hooks subdirectory
+    mkdir -p ~/.git-templates/hooks
+    # configure this directory as git templates directory
+    git config --global init.templatedir '~/.git-templates'
+    # install post-merge script
+    cp ~/.vim/bundle/vim-dn-latex/vim-dn-latex-resources/git/post-merge \
+            ~/.git-templates/hooks/
+
+This means the script is copied into every subsequent repository that is
+created. To install it into an existing repository, such as vim-dn-latex,
+the repository must be reinitialised:
+    cd ~.,vim/bundle/vim-dn-latex
+    git init
+
+Although the post-merge hook to synchronise beamer files is copied into
+every new repository, the script checks the name of the repository that
+calls it and only synchronises beamer files if the repository is named
+'vim-dn-latex'.
 -------------------------------------------------------------------------
                                                        *dn-latex-ultisnips*
-9. UltiSnips snippets
+8. UltiSnips snippets
 
 Custom ultisnips snippets are provided.
 
@@ -204,7 +216,7 @@ frfullfig: beamer frame with full size image
 beamerbox: framed/boxed text
 -------------------------------------------------------------------------
                                                              *dn-latex-atp*
-10. ATP integration
+9. ATP integration
 
 The Automatic LaTeX Plugin is a latex plugin for latex (project page:
 http://atp-vim.sourceforge.net/, repo: https://github.com/coot/atp_vim).

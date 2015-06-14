@@ -33,9 +33,9 @@ Beamer
 
 The plugin includes files for beamer themes Air, Amsterdam, Bunsen, Frederiksberg, Lleida, McGill, Oxygen, Stockton, Sybila, Torino and UNL. These files are located in the vim-dn-latex-resources/beamer plugin subdirectory. To install the themes in tex they need to copied into a latex directory.
 
-Provided vim-dn-latex-resources/beamer is on the runtimepath, the beamer files can be copied to the TEXMFHOME directory (usually ~/texmf on unix) by running the DNL_SyncBeamer function. This function determines the target directory with 'kpsewhich' and the files are copied (synchronised) by 'rsync'.
+Provided vim-dn-latex-resources/beamer is on the runtimepath, the beamer files can be copied to the TEXMFHOME directory (usually ~/texmf on unix) by running the DNL_SyncBeamer function. This function determines the target directory with 'kpsewhich', the files are copied (synchronised) by 'rsync', and the tex ls-R database is updated by 'mktexlsr' (also called 'texhash' on some systems).
 
-To synchronise beamer files with each git-merge (which includes all git-pulls) it is possible to set up a template. In the vim-dn-latex-resources/git plugin subdirectory is a script that can be used as a global post-merge hook (it checks the repository name and only acts on a vim-dn-latex repository merge/pull.)
+It is possible to automate beamer file synchronisation by setting a custom script to run during each git merge (includes all git pulls) of the repository. Such a script is provided in the vim-dn-latex-resources/git plugin subdirectory. See `:h dn-latex-beamer-git-hook` for details on setting this script to run automatically.
 
 Templates
 ---------
