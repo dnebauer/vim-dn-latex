@@ -573,7 +573,8 @@ function! DNL_SyncBeamer()
     " - add terminal slashes as they are supposed to be important for rsync
     let l:cmd = 'rsync -i -a --delete' . ' '
                 \ . shellescape(l:source . '/') . ' '
-                \ . shellescape(l:target . '/')
+                \ . shellescape(l:target . '/') . ' '
+                \ . '| grep -v "^\."'
     let l:changes = system(l:cmd)
     if v:shell_error
         call DNU_Error('Error occurred while syncing beamer files:')
