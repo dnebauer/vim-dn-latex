@@ -10,7 +10,7 @@
 if exists('b:do_not_load_vim_dn_latex') | finish | endif
 let b:do_not_load_vim_dn_latex = 1                             " }}}2
 " relies upon dn-utils                                           {{{2
-if !exists('b:do_not_load_dn_utils')
+if !exists('b:loaded_dn_utils')
 	if mode() == 'i' | execute "normal \<Esc>" | endif
 	echohl ErrorMsg
 	echo 'Cannot load dn-latex plugin'
