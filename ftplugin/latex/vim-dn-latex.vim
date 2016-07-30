@@ -1,39 +1,41 @@
-" Vim ftplugin for latex (provided by the vim-dn-latex package)
+" Title:      Vim ftplugin for latex
 " Maintainer: David Nebauer <david@nebauer.org>
 " License:    This file is placed in the public domain
 
 " TODO: replace template dir "@pkgdatatemplates_dir@/" with
 "       bundle directory
 
-" CONTROL STATEMENTS:                                            {{{1
-" load plugin once only                                          {{{2
+" CONTROL STATEMENTS:                                                  {{{1
+" contains unicode characters                                          {{{2
+scriptencoding utf-8
+" load plugin once only                                                {{{2
 if exists('b:do_not_load_vim_dn_latex') | finish | endif
-let b:do_not_load_vim_dn_latex = 1                             " }}}2
-" relies upon dn-utils                                           {{{2
+let b:do_not_load_vim_dn_latex = 1                                   " }}}2
+" relies upon dn-utils                                                 {{{2
 if !exists('b:loaded_dn_utils')
-	if mode() == 'i' | execute "normal \<Esc>" | endif
+	if mode() ==# 'i' | execute "normal \<Esc>" | endif
 	echohl ErrorMsg
 	echo 'Cannot load dn-latex plugin'
 	echo 'because dn-utils plugin is missing'
 	echohl nil 
     finish
-endif                                                          " }}}2
-" prevent errors from line continuation                          {{{2
-let s:save_cpo = &cpo
-set cpo&vim                                                    " }}}2
+endif                                                                " }}}2
+" prevent errors from line continuation                                {{{2
+let s:save_cpo = &cpoptions
+set cpoptions&vim                                                    " }}}2
 
-" VARIABLES:                                                     {{{1
-" relies upon dn-utils booleans                                  {{{2
+" VARIABLES:                                                           {{{1
+" relies upon dn-utils booleans                                        {{{2
 " uses variables 'b:dn_true' and 'b:dn_false'                    }}}2
-" contribute to dn-utils help                                    {{{2
-" - add to plugins list (b:dn_help_plugins)                      {{{3
+" contribute to dn-utils help                                          {{{2
+" - add to plugins list (b:dn_help_plugins)                            {{{3
 if !exists('b:dn_help_plugins')
     let b:dn_help_plugins = {}
 endif
 if index(b:dn_help_plugins, 'tex', b:dn_true) == -1
     call add(b:dn_help_plugins, 'tex')
-endif                                                          " }}}3
-" - add help topics (b:dn_help_topics)                           {{{3
+endif                                                                " }}}3
+" - add help topics (b:dn_help_topics)                                 {{{3
 if !exists('b:dn_help_topics')
     let b:dn_help_topics = {}
 endif
@@ -42,8 +44,8 @@ let b:dn_help_topics['tex'] = {
             \ 'compiler commands': 'tex_compiler_commands', 
             \ 'viewing pdf'      : 'tex_view_pdf',
             \ 'snippets'         : 'tex_snippets',
-            \ }                                                " }}}3
-" - add help data for help topics (b:dn_help_data)               {{{3
+            \ }                                                      " }}}3
+" - add help data for help topics (b:dn_help_data)                     {{{3
 if !exists('b:dn_help_data')
     let b:dn_help_data = {}
 endif
@@ -206,9 +208,9 @@ let b:dn_help_data['tex_snippets'] = [
             \ 'frfullfig: beamer frame with full size image',
             \ '',
             \ 'beamerbox: framed/boxed text',
-            \ ]                                                " }}}3
-" used for new document creation                               " {{{2
-" - document types (s:doc_types)                                 {{{3
+            \ ]                                                      " }}}3
+" used for new document creation                               "       {{{2
+" - document types (s:doc_types)                                       {{{3
 "   . Dictionary(
 "       key   : user-readable description,
 "       value : token,
@@ -219,8 +221,8 @@ let s:doc_types = {
             \ 'Standard LaTeX 2e report class' : 'report', 
             \ 'Standard LaTeX 2e book class'   : 'book',
             \ 'Beamer class for presentations' : 'beamer',
-            \ }                                                " }}}3
-" - information about doc types (s:doc_type_info)                {{{3
+            \ }                                                      " }}}3
+" - information about doc types (s:doc_type_info)                      {{{3
 "   . info includes template file name and data items to be 
 "     supplied by the user
 "   . Dictionary(
@@ -248,8 +250,8 @@ let s:doc_type_info = {
             \       'template': 'beamer.tex',
             \       'items': ['description', 'author', 'title', 'institute'],
             \   },
-            \ }                                                " }}}3
-" - attributes for data items (s:data_item_definitions)          {{{3
+            \ }                                                      " }}}3
+" - attributes for data items (s:data_item_definitions)                {{{3
 "   . Dictionary(
 "       key   : user data item token from s:user_data,
 "       value : Dictionary(
@@ -288,9 +290,9 @@ let s:data_item_definitions = {
             \       'prompt' : 'Enter document title: ',
             \       'token'  : '<TITLE>',
             \   },
-            \ }                                                " }}}3
-" special characters to be inserted into text                  " {{{2
-" - special characters                                           {{{3
+            \ }                                                      " }}}3
+" special characters to be inserted into text                  "       {{{2
+" - special characters                                                 {{{3
 let s:chars = {}
 let s:chars['section (§)']       = '\S{}'
 let s:chars['dagger (†)']        = '\dag{}'
@@ -300,8 +302,8 @@ let s:chars['trademark (™)']     = '\texttrademark{}'
 let s:chars['registered (®)']    = '\textregistered{}'
 let s:chars['ellipsis (…)']      = '\dots{}'
 let s:chars['checkmark (✓)']     = '\checkmark{}'
-let s:chars['ballot x (✗)']      = '\XSolidBrush{}'            " }}}3
-" - reserved                                                     {{{3
+let s:chars['ballot x (✗)']      = '\XSolidBrush{}'                  " }}}3
+" - reserved                                                           {{{3
 let s:chars['latex reserved']  = {
             \ 'backslash (\)'   : '\textbackslash{}', 
             \ 'underscore (_)'  : '\_', 
@@ -310,30 +312,30 @@ let s:chars['latex reserved']  = {
             \ 'close brace (})' : '\}', 
             \ 'ampersand (&)'   : '\&', 
             \ 'hash (#)'        : '\#' 
-            \ }                                                " }}}3
-" - math/scientific                                              {{{3
+            \ }                                                      " }}}3
+" - math/scientific                                                    {{{3
 let s:chars['math/scientific'] = { 
             \ 'math asterisk (∗)'   : '\textasteriskcentered{}', 
             \ 'math multiply (×)'   : '$\times$', 
             \ 'micro (µ)'           : '\micro{}', 
             \ 'degrees (°)'         : '\degree{}', 
             \ 'degrees celsius (℃)' : '\textcelsius' 
-            \ }                                                " }}}3
-" - currency                                                     {{{3
+            \ }                                                      " }}}3
+" - currency                                                           {{{3
 let s:chars['currency']        = { 
             \ 'dollar ($)' : '\$', 
             \ 'pound (£)'  : '\pounds{}', 
             \ 'euro (€)'   : '\texteuro{}', 
             \ 'cent (¢)'   : '\textcent{}' 
-            \ }                                                " }}}3
-" - arrows                                                       {{{3
+            \ }                                                      " }}}3
+" - arrows                                                             {{{3
 let s:chars['arrows']          = { 
             \ 'left (←)'       : '$\leftarrow$', 
             \ 'long left (⟵)'  : '$\longleftarrow$', 
             \ 'right (→)'      : '$\rightarrow$', 
             \ 'long right (⟶)' : '$\longrightarrow$' 
-            \ }                                                " }}}3
-" - greek upper                                                  {{{3
+            \ }                                                      " }}}3
+" - greek upper                                                        {{{3
 let s:chars['greek upper']     = { 
             \ 'Alpha (Α)'   : 'A', 
             \ 'Beta (Β)'    : 'B', 
@@ -359,8 +361,8 @@ let s:chars['greek upper']     = {
             \ 'Chi (Χ)'     : 'X', 
             \ 'Psi (Ψ)'     : '$\Psi$', 
             \ 'Omega (Ω)'   : '$\Omega$' 
-            \ }                                                " }}}3
-" - greek lower                                                  {{{3
+            \ }                                                      " }}}3
+" - greek lower                                                        {{{3
 let s:chars['greek lower']     = { 
             \ 'alpha (α)'      : '$\alpha$', 
             \ 'beta (β)'       : '$\beta$', 
@@ -393,14 +395,14 @@ let s:chars['greek lower']     = {
             \ 'chi (χ)'        : '$\chi$', 
             \ 'psi (ψ)'        : '$\psi$', 
             \ 'omega (ω)'      : '$\omega$' 
-            \ }                                                " }}}3
-                                                               " }}}2
-" plugin resources directory                                   " {{{2
-let s:plugin_resources_dir = ''                                " }}}2
-                                                               " }}}2
+            \ }                                                      " }}}3
+                                                                     " }}}2
+" plugin resources directory                                   "       {{{2
+let s:plugin_resources_dir = ''                                      " }}}2
+                                                                     " }}}2
 
-" SETTINGS:                                                      {{{1
-" tab settings                                                   {{{2
+" SETTINGS:                                                            {{{1
+" tab settings                                                         {{{2
 setlocal tabstop=2
 setlocal softtabstop=2
 setlocal shiftwidth=2
@@ -412,10 +414,10 @@ setlocal expandtab
 " - -t: do not exempt long lines from breaking at textwidth
 setlocal textwidth=72
 setlocal formatoptions+=tca
-setlocal formatoptions-=l                                      " }}}2
+setlocal formatoptions-=l                                            " }}}2
                                                                  
-" FUNCTIONS:                                                     {{{1
-" Function: DNL_InsertSpecialChar                                {{{2
+" FUNCTIONS:                                                           {{{1
+" Function: DNL_InsertSpecialChar                                      {{{2
 " Purpose:  insert special character
 " Params:   1 - insert mode [default=<false>, optional, boolean]
 " Insert:   special character
@@ -428,12 +430,13 @@ function! DNL_InsertSpecialChar(...)
     " variables
     let l:insert = (a:0 > 0 && a:1) ? b:dn_true : b:dn_false
     " select special character
-    let l:char = DNU_MenuSelect(s:chars, 'Select character to insert:')
+    let l:char = dn#util#menuSelect(s:chars,
+     \                              'Select character to insert:')
     " insert character
-    if l:char != '' | call DNU_InsertString(l:char) | endif
-    if l:insert | call DNU_InsertMode() | endif
+    if l:char !=? '' | call dn#util#insertString(l:char) | endif
+    if l:insert | call dn#util#insertMode() | endif
 endfunction
-" Function: DNL_AlignTable                                       {{{2
+" Function: DNL_AlignTable                                             {{{2
 " Purpose:  arrange columns in table source
 " Params:   1 - insert mode [default=<false>, optional, boolean]
 " Insert:   spaces as required
@@ -470,13 +473,13 @@ function! DNL_AlignTable(...)
     " analyse table to get start and end lines
     let l:start = searchpair(l:start_token, '', l:end_token, 'bW')
     if l:start < 1    " not inside table or error occurred
-        call DNU_Error('Cursor must be inside a table')
+        call dn#util#error('Cursor must be inside a table')
         return
     endif
     let l:start += 1
     let l:end = searchpair(l:start_token, '', l:end_token, 'W')
     if l:end < 1
-        call DNU_Error('Unable to find end of table')
+        call dn#util#error('Unable to find end of table')
         return
     endif
     let l:end -= 1
@@ -506,7 +509,7 @@ function! DNL_AlignTable(...)
     endfor
     " get max number of colseps per line
     for l:line_num in keys(l:data)
-        let l:matches = DNU_MatchCount(l:data[l:line_num], l:col_sep)
+        let l:matches = dn#util#matchCount(l:data[l:line_num], l:col_sep)
         if l:matches > l:sep_count | let l:sep_count = l:matches | endif
     endfor
     echo l:sep_count
@@ -521,11 +524,9 @@ function! DNL_AlignTable(...)
         endfor
         " in each line pad this column separator to right-most position
         for l:line_num in keys(l:data)
-            let l:pos = DNU_StridxNum(
-                        \ l:data[l:line_num], l:col_sep, l:loop
-                        \ )
+            let l:pos = match(l:data[l:line_num], l:col_sep, 0, l:loop)
             if l:pos > -1    " if line wrapped may not have col-sep match
-                let l:data[l:line_num] = DNU_PadInternal(
+                let l:data[l:line_num] = dn#util#padInternal(
                             \ l:data[l:line_num], l:pos, l:max_pos
                             \ )
             endif
@@ -540,9 +541,9 @@ function! DNL_AlignTable(...)
     " return to where we started
     call setpos('.', l:save_cursor)
     " return to calling mode
-    if l:insert | call DNU_InsertMode() | endif
-endfunction                                                    " }}}2
-" Function: DNL_SyncBeamer                                       {{{2
+    if l:insert | call dn#util#insertMode() | endif
+endfunction                                                          " }}}2
+" Function: DNL_SyncBeamer                                             {{{2
 " Purpose:  install beamer files in local texmf tree
 " Params:   nil
 " Insert:   nil
@@ -552,12 +553,13 @@ endfunction                                                    " }}}2
 function! DNL_SyncBeamer()
     " only implemented for unix
     if !has('unix')
-        call DNU_Error('Beamer installation not yet implemented on this OS')
+        call dn#util#error('Beamer installation not yet '
+                    \      . 'implemented on this OS')
         return b:dn_false
     endif
     " need rsync
     if !executable('rsync')
-        call DNU_Error('Need ''rsync'' to synchronise beamer files')
+        call dn#util#error("Need 'rsync' to synchronise beamer files")
         return b:dn_false
     endif
     " set source directory
@@ -575,14 +577,14 @@ function! DNL_SyncBeamer()
                 \ . '| grep -v "^\."'
     let l:changes = system(l:cmd)
     if v:shell_error
-        call DNU_Error('Error occurred while syncing beamer files:')
-        call DNU_Error('------------------------------------------')
-        call DNU_Error(v:shell_error)
-        call DNU_Error('------------------------------------------')
+        call dn#util#error('Error occurred while syncing beamer files:')
+        call dn#util#error('------------------------------------------')
+        call dn#util#error(v:shell_error)
+        call dn#util#error('------------------------------------------')
         return b:dn_false
     endif
     if !isdirectory(l:target)
-        call DNU_Error('Failed to create TEXMFHOME directory')
+        call dn#util#error('Failed to create TEXMFHOME directory')
         return b:dn_false
     endif
     " update local tex ls-R database if changes made to beamer files
@@ -590,18 +592,21 @@ function! DNL_SyncBeamer()
         let l:cmd = 'mktexlsr ' . strpart(l:target, 0, strlen(l:target)-1)
         call system(l:cmd)
         if v:shell_error
-            call DNU_Error('Error occurred while updating local tex ls-R db:')
-            call DNU_Error('------------------------------------------------')
-            call DNU_Error(v:shell_error)
-            call DNU_Error('------------------------------------------------')
+            call dn#util#error('Error occurred while updating '
+                        \      . 'local tex ls-R db:')
+            call dn#util#error('--------------------------'
+                        \      . '----------------------')
+            call dn#util#error(v:shell_error)
+            call dn#util#error('--------------------------'
+                        \      . '----------------------')
             return b:dn_false
         endif
     endif
     " guess we made it!
     echo 'Beamer files synchronised'
     return b:dn_true
-endfunction                                                    " }}}2
-" Function: DNL_InsertTemplate                                   {{{2
+endfunction                                                          " }}}2
+" Function: DNL_InsertTemplate                                         {{{2
 " Purpose:  insert template and ready it for use
 " Params:   nil
 " Insert:   template
@@ -626,14 +631,14 @@ function! DNL_InsertTemplate()
     call append(0, l:new_template)
     " move cursor to start token (and delete start token)
     if search('<START>')
-        execute "normal df>"
+        execute 'normal df>'
     else
-        call DNU_Warn("No start token '<START>' found")
+        call dn#util#warn("No start token '<START>' found")
     endif
     " save file
     execute ':write!'
-endfunction                                                    " }}}2
-" Function: s:resourcesDirIsSet                                  {{{2
+endfunction                                                          " }}}2
+" Function: s:resourcesDirIsSet                                        {{{2
 " Purpose:  set script variable for plugin resources dir
 " Params:   nil
 " Insert:   nil
@@ -650,24 +655,24 @@ function! s:resourcesDirIsSet()
             endif
         endif
     endif
-    let l:var = DNU_GetRtpDir('vim-dn-latex-resources')
+    let l:var = dn#util#getRtpDir('vim-dn-latex-resources')
     if strlen(l:var) > 0
         if isdirectory(l:var)
             let s:plugin_resources_dir = l:var
             return b:dn_true
         else
             let l:msg = 'Could not find valid plugin resources directory'
-            call DNU_Error(l:msg)
-            call DNU_Error('Plugin resources directory was not set')
+            call dn#util#error(l:msg)
+            call dn#util#error('Plugin resources directory was not set')
             return b:dn_false
         endif
     else    " empty string returned
-        call DNU_Error('Could not detect plugin resources directory')
-        call DNU_Error('Plugin resources directory was not set')
+        call dn#util#error('Could not detect plugin resources directory')
+        call dn#util#error('Plugin resources directory was not set')
         return b:dn_false
     endif
-endfunction                                                    " }}}2
-" Function: s:getDir                                             {{{2
+endfunction                                                          " }}}2
+" Function: s:getDir                                                   {{{2
 " Purpose:  Return directory path to desired directory
 " Params:   directory type <required> <value='atp','beamer','templates'>
 "                          [string]
@@ -683,38 +688,39 @@ function! s:getDir(type)
                 \ 'texmfhome' : '',
                 \ }
     if !has_key(l:valid_types, a:type)
-        call DNU_Error("Invalid directory type requested '" . a:type . "'")
+        call dn#util#error("Invalid directory type requested '"
+                    \      . a:type . "'")
         return 0
     endif
 	" require resources directory
     if !s:resourcesDirIsSet()
-        call DNU_Error('Unable to return ' . a:type . ' directory')
+        call dn#util#error('Unable to return ' . a:type . ' directory')
         return 0
     endif
     " return requested directory
     let l:dir = ''
-    if     a:type =~ 'atp'
+    if     a:type =~# 'atp'
         let l:dir = s:plugin_resources_dir . '/atp'
-    elseif a:type =~ 'beamer'
+    elseif a:type =~# 'beamer'
         let l:dir = s:plugin_resources_dir . '/beamer'
-    elseif a:type =~ 'templates'
+    elseif a:type =~# 'templates'
         let l:dir = s:plugin_resources_dir . '/templates'
-    elseif a:type =~ 'texmfhome'
+    elseif a:type =~# 'texmfhome'
         let l:dir = s:getTexmfhomeDir()
     endif
-    if l:dir =~ '^$'
-        call DNU_Error("Unknown directory type '" . a:type . "'")
+    if l:dir =~# '^$'
+        call dn#util#error("Unknown directory type '" . a:type . "'")
         return 0
     endif
     if isdirectory(l:dir)
         return l:dir
     else
         let l:msg = "Invalid directory '" . l:dir
-                    \ . " for directory type '" . a:type . "'")
-        call DNU_Error(l:msg)
+                    \ . " for directory type '" . a:type . "'"
+        call dn#util#error(l:msg)
     endif
-endfunction                                                    " }}}2
-" Function: s:getTexmfhomeDir                                    {{{2
+endfunction                                                          " }}}2
+" Function: s:getTexmfhomeDir                                          {{{2
 " Purpose:  Return TEXMFHOME directory path
 " Params:   nil
 " Insert:   nil
@@ -724,7 +730,7 @@ endfunction                                                    " }}}2
 function! s:getTexmfhomeDir()
     " need kpsewhich
     if !executable('kpsewhich')
-        call DNU_Error('Need ''kpsewhich'' to locate TEXMFHOME')
+        call dn#util#error('Need ''kpsewhich'' to locate TEXMFHOME')
         return b:dn_false
     endif
     " locate TEXMFHOME
@@ -733,14 +739,14 @@ function! s:getTexmfhomeDir()
     let l:cmd = 'kpsewhich --var-value TEXMFHOME'
     let l:dir = split(system(l:cmd), '\n')[0] . '/'
     if v:shell_error
-        call DNU_Error('Error occurred while locating TEXMFHOME:')
-        call DNU_Error('----------------------------------------')
-        call DNU_Error(v:shell_error)
-        call DNU_Error('----------------------------------------')
+        call dn#util#error('Error occurred while locating TEXMFHOME:')
+        call dn#util#error('----------------------------------------')
+        call dn#util#error(v:shell_error)
+        call dn#util#error('----------------------------------------')
         return b:dn_false
     endif
-    if l:dir =~ '^$'
-        call DNU_Error('Failed to locate TEXMFHOME')
+    if l:dir =~# '^$'
+        call dn#util#error('Failed to locate TEXMFHOME')
         return b:dn_false
     endif
     " create directory if it does not exist
@@ -750,21 +756,21 @@ function! s:getTexmfhomeDir()
         let l:cmd = 'mkdir -p ' . l:dir
         call system(l:cmd)
         if v:shell_error
-            call DNU_Error('Error occurred while creating TEXMFHOME:')
-            call DNU_Error('----------------------------------------')
-            call DNU_Error(v:shell_error)
-            call DNU_Error('----------------------------------------')
+            call dn#util#error('Error occurred while creating TEXMFHOME:')
+            call dn#util#error('----------------------------------------')
+            call dn#util#error(v:shell_error)
+            call dn#util#error('----------------------------------------')
             return b:dn_false
         endif
         if isdirectory(l:dir)
             return l:dir
         else    " something bad happened
-            call DNU_Error('Failed to create TEXMFHOME directory')
+            call dn#util#error('Failed to create TEXMFHOME directory')
             return b:dn_false
         endif
     endif
-endfunction                                                    " }}}2
-" Function: s:getDocType                                         {{{2
+endfunction                                                          " }}}2
+" Function: s:getDocType                                               {{{2
 " Purpose:  get document type
 " Params:   nil
 " Insert:   nil
@@ -772,26 +778,29 @@ endfunction                                                    " }}}2
 " Note:     uses script variable 's:doc_types'
 " Note:     used by function 's:insertTemplate'
 function! s:getDocType()
-    let l:pick = DNU_MenuSelect(keys(s:doc_types), 'Select document type:')
-    if l:pick == '' | return '' | endif
+    let l:pick = dn#util#menuSelect(keys(s:doc_types),
+                \                   'Select document type:')
+    if l:pick ==# '' | return '' | endif
     return s:doc_types[l:pick]
-endfunction                                                    " }}}2
-" Function: s:getDocData                                         {{{2
+endfunction                                                          " }}}2
+" Function: s:getDocData                                               {{{2
 " Purpose:  get user data
 " Params:   1 - doc type as supplied by s:doc_types
 " Insert:   template
 " Return:   List of Dictionary items as per values from
 "           s:data_item_definitions, but containing only
 "           'token' and, where supplied, 'value' keys
-" Note:     uses script variables 's:doc_type_info', 's:data_item_definitions'
+" Note:     uses script variables 's:doc_type_info',
+"           's:data_item_definitions'
 " Note:     used by function 's:insertTemplate'
 function! s:getDocData(type)
     " sanity checks and variables
     " - need type
-    if a:type == '' | return [] | endif
+    if a:type ==# '' | return [] | endif
     " - need a matching doc type with defined items
     if !exists("s:doc_type_info[a:type]['items']")
-        call DNU_Error("No data items defined for doc type '" . a:type . "'")
+        call dn#util#error("No data items defined for doc type '"
+                    \      . a:type . "'")
         return []
     endif
     " assemble data items
@@ -802,7 +811,7 @@ function! s:getDocData(type)
         else
             let l:msg = "Doc type '" . a:type . "' user data item '" 
             let l:msg .= l:item . "' is not defined"
-            call DNU_Warn(l:msg)
+            call dn#util#warn(l:msg)
         endif
     endfor
     unlet! l:item
@@ -812,11 +821,11 @@ function! s:getDocData(type)
     for l:item in l:items
         let l:default = exists("l:item['default']") ? l:item.default : ''
         echo l:item.explain
-        let l:value = input(l:item.prompt, l:default) | echo " "
-        if l:value != ''
+        let l:value = input(l:item.prompt, l:default) | echo ' '
+        if l:value !=# ''
             let l:item['value'] = l:value
         else
-            call DNU_Warn('No value entered for ' . l:item.name)
+            call dn#util#warn('No value entered for ' . l:item.name)
         endif
         " - remove unneeded keys
         unlet l:item.name l:item.explain l:item.prompt
@@ -829,8 +838,8 @@ function! s:getDocData(type)
     call add(l:items, {'token': '<FILENAME>', 'value': expand('%')})
     " return data
     return l:items
-endfunction                                                    " }}}2
-" Function: s:getTemplate                                        {{{2
+endfunction                                                          " }}}2
+" Function: s:getTemplate                                              {{{2
 " Purpose:  get template content and return as List
 " Params:   1 - doc type as returned by s:getDocType()
 " Insert:   template
@@ -840,12 +849,12 @@ endfunction                                                    " }}}2
 function! s:getTemplate(type)
     " sanity checks
     " - need type
-    if a:type == '' | return [] | endif
+    if a:type ==# '' | return [] | endif
     " - need doc type with defined template
     if !exists("s:doc_type_info[a:type]['template']")
         let l:msg = "No template filename defined for doc type '"
                     \ . a:type . "'"
-        call DNU_Error(l:msg)
+        call dn#util#error(l:msg)
         return []
     endif
     " variables
@@ -855,20 +864,21 @@ function! s:getTemplate(type)
     let l:template_file = l:template_dir . '/'
                 \ . s:doc_type_info[a:type]['template']
     if !filereadable(l:template_file)
-        call DNU_Error("Unable to read template '" . l:template_file . "'")
+        call dn#util#error("Unable to read template '"
+                    \      . l:template_file . "'")
         return []
     endif
     " read in template content
     let l:template_content = readfile(l:template_file)
     " check for success
     if len(l:template_content) == 0
-        call DNU_Error('No content read from template ' 
+        call dn#util#error('No content read from template ' 
                     \ . l:template_file . "'")
         return []
     endif
     return l:template_content
-endfunction                                                    " }}}2
-" Function: s:insertData                                         {{{2
+endfunction                                                          " }}}2
+" Function: s:insertData                                               {{{2
 " Purpose:  insert data items into template
 " Params:   1 - data [List of Dictionary items]
 "               Dictionary(
@@ -896,7 +906,7 @@ function! s:insertData(data, template)
                 if l:first_iteration
                     let l:msg = "Cannot replace token '" . l:item['token']
                     let l:msg .= "' -- no value supplied"
-                    call DNU_Warn(l:msg)
+                    call dn#util#warn(l:msg)
                 endif
             endif  " exists(l:item['value'])
         endfor  " l:item in a:data
@@ -905,8 +915,8 @@ function! s:insertData(data, template)
     endfor  " l:line in a:template
     " return altered template
     return l:new_template
-endfunction                                                    " }}}2
-" Function: s:validVar                                           {{{2
+endfunction                                                          " }}}2
+" Function: s:validVar                                                 {{{2
 " Purpose:  check validity of variables derived from script variables
 " Params:   1 - variable to be checked
 "           2 - kind of variable ('template'|'dt-items'|'dt-items-trimmed')
@@ -916,15 +926,15 @@ endfunction                                                    " }}}2
 " Note:     used by functions 's:insertTemplate' and 's:getDocData'
 function! s:validVar(var, kind)
     " check 'template'
-    if a:kind == 'template'
+    if a:kind ==# 'template'
         " must be a list
         if type(a:var) != type([])
-            call DNU_Error('Template variable is not a List')
+            call dn#util#error('Template variable is not a List')
             return 0
         endif
         " must have content
         if len(a:var) == 0
-            call DNU_Error('Template variable is empty')
+            call dn#util#error('Template variable is empty')
             return 0
         endif
         return 1  " success if passed all tests
@@ -940,13 +950,13 @@ function! s:validVar(var, kind)
     "   changing template
     " - data items require key: 'token'
     " - data items can have optional key: 'value'
-    elseif a:kind == 'dt-items' || a:kind == 'dt-items-trimmed'
+    elseif a:kind ==# 'dt-items' || a:kind ==# 'dt-items-trimmed'
         " set the required and optional keys, and human-readable var name
-        if     a:kind == 'dt-items'
+        if     a:kind ==# 'dt-items'
             let l:required = ['name', 'explain', 'prompt', 'token']
             let l:optional = ['default', 'value']
             let l:name = 'Doc type data items'
-        elseif a:kind == 'dt-items-trimmed'
+        elseif a:kind ==# 'dt-items-trimmed'
             let l:required = ['token']
             let l:optional = ['value']
             let l:name = 'Trimmed doc type data items'
@@ -954,12 +964,12 @@ function! s:validVar(var, kind)
         let l:allowed = l:required + l:optional
         " must be a list
         if type(a:var) != type([])
-            call DNU_Error(l:name . ' is not a List')
+            call dn#util#error(l:name . ' is not a List')
             return 0
         endif
         " must have content
         if len(a:var) == 0
-            call DNU_Error(l:name . ' is empty')
+            call dn#util#error(l:name . ' is empty')
             return 0
         endif
         " elements must be dictionaries
@@ -967,9 +977,9 @@ function! s:validVar(var, kind)
         for l:item in a:var
             if type(l:item) != type({})
                 let l:msg = l:name . ' element ' . l:item_count
-                let l:msg .= ' is a ' . DNU_VarType(l:item)
+                let l:msg .= ' is a ' . dn#util#varType(l:item)
                 let l:msg .= ", not a Dictionary:\n" . string(l:item)
-                call DNU_Error(l:msg)
+                call dn#util#error(l:msg)
                 return 0
             endif
             unlet l:item
@@ -984,7 +994,7 @@ function! s:validVar(var, kind)
                     let l:msg = l:name . ' element ' . l:item_count
                     let l:msg .= " has invalid key '" . l:key . "':\n"
                     let l:msg .= string(l:item)
-                    call DNU_Error(l:msg)
+                    call dn#util#error(l:msg)
                     return 0
                 endif
             endfor
@@ -994,17 +1004,17 @@ function! s:validVar(var, kind)
                     let l:msg = l:name . ' element ' . l:item_count
                     let l:msg .= " is missing required key '" . l:key . "':\n"
                     let l:msg .= string(l:item)
-                    call DNU_Error(l:msg)
+                    call dn#util#error(l:msg)
                     return 0
                 endif
             endfor
             " - check all keys have values with content
             for l:key in keys(l:item)
-                if l:item[l:key] == ''
+                if l:item[l:key] ==# ''
                     let l:msg = l:name . ' element ' . l:item_count
                     let l:msg .= " has a key ('" . l:key . "') with no value:\n"
                     let l:msg .= string(l:item)
-                    call DNU_Error(l:msg)
+                    call dn#util#error(l:msg)
                     return 0
                 endif
             endfor
@@ -1018,13 +1028,13 @@ function! s:validVar(var, kind)
             if l:count > 1
                 let l:msg = l:name . " has multiple copies of this element:\n"
                 let l:msg .= string(l:item)
-                call DNU_Error(l:msg)
+                call dn#util#error(l:msg)
                 return 0
             endif
         endfor
         " check for multiple elements with the same 'name' value
         " - obviously can only be done before key-value pairs are trimmed
-        if a:kind == 'dt-items'
+        if a:kind ==# 'dt-items'
             " - extract a list of element names
             let l:element_names = []
             for l:item in a:var
@@ -1040,7 +1050,7 @@ function! s:validVar(var, kind)
                             let l:msg .= "\n" . string(l:item)
                         endif
                     endfor
-                    call DNU_Error(l:msg)
+                    call dn#util#error(l:msg)
                     return 0
                 endif
             endfor
@@ -1058,16 +1068,17 @@ function! s:validVar(var, kind)
                             let l:msg .= "\n" . string(l:item)
                         endif
                     endfor
-                call DNU_Error(l:msg)
+                call dn#util#error(l:msg)
                 return 0
             endif
         endfor
         return 1  " success if passed all tests
     else  " invalid a:kind
-        call DNU_Warn("Invalid kind parameter '" . a:kind . "'")
+        call dn#util#warn("Invalid kind parameter '" . a:kind . "'")
         return 0
-endfunction                                                    " }}}2
-" Function: s:deactivateRightMapping                             {{{2
+    endif
+endfunction                                                          " }}}2
+" Function: s:deactivateRightMapping                                   {{{2
 " Purpose:  deactivate <Right> mapping as it interferes with Ctrl-J mapping
 "           if no existing mapping throw  'E31 = No such mapping'
 " Params:   nil
@@ -1083,11 +1094,11 @@ function! s:deactivateRightMapping()
         nunmap <Right>
     catch /^Vim\((\a\+)\)\=:E31:/
     endtry                             
-endfunction                                                    " }}}2
+endfunction                                                          " }}}2
 
-" MAPPINGS:                                                      {{{1
+" MAPPINGS:                                                            {{{1
 "                                                                }}}2
-" \is -> DNL_InsertSpecialChar                                   {{{2
+" \is -> DNL_InsertSpecialChar                                         {{{2
 " insert special character
 imap <buffer> <unique> <Plug>DnIS <Esc>:call DNL_InsertSpecialChar(b:dn_true)<CR>
 nmap <buffer> <unique> <Plug>DnIS :call DNL_InsertSpecialChar()<CR>
@@ -1096,8 +1107,8 @@ if !hasmapto('<Plug>DnIS', 'i')
 endif
 if !hasmapto('<Plug>DnIS', 'n')
 	nmap <buffer> <unique> <LocalLeader>is <Plug>DnIS
-endif                                                          " }}}2
-" \at -> DNL_AlignTable                                          {{{2
+endif                                                                " }}}2
+" \at -> DNL_AlignTable                                                {{{2
 " align source table columns
 imap <buffer> <unique> <Plug>DnAT <Esc>:call DNL_AlignTable(b:dn_true)<CR>
 nmap <buffer> <unique> <Plug>DnAT :call DNL_AlignTable()<CR>
@@ -1106,11 +1117,12 @@ if !hasmapto('<Plug>DnAT', 'i')
 endif
 if !hasmapto('<Plug>DnAT', 'n')
 	nmap <buffer> <unique> <LocalLeader>at <Plug>DnAT
-endif                                                          " }}}2"
+endif                                                                " }}}2"
 
-" CONTROL STATEMENTS:                                            {{{1
-" return settings to previous values                             {{{2
-let &cpo = s:save_cpo                                          " }}}2
-"                                                                }}}1
+" CONTROL STATEMENTS:                                                  {{{1
+" return settings to previous values                                   {{{2
+let &cpoptions = s:save_cpo
+unlet s:save_cpo                                                     " }}}2
+"                                                                      }}}1
 
 " vim: set foldmethod=marker :
