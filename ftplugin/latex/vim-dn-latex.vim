@@ -516,9 +516,7 @@ function! DNL_AlignTable(...)
         " find right-most position of this column separator
         let l:max_pos = 0
         for l:line_num in keys(l:data)
-            let l:pos = DNU_StridxNum(
-                        \ l:data[l:line_num], l:col_sep, l:loop
-                        \ )
+            let l:pos = match(l:data[l:line_num], l:col_sep, 0, l:loop)
             if l:pos > l:max_pos | let l:max_pos = l:pos | endif
         endfor
         " in each line pad this column separator to right-most position
