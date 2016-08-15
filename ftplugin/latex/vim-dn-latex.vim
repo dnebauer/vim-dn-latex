@@ -1,6 +1,5 @@
 " Title:      Vim ftplugin for latex
 " Maintainer: David Nebauer <david@nebauer.org>
-" License:    This file is placed in the public domain
 
 " TODO: replace template dir "@pkgdatatemplates_dir@/" with
 "       bundle directory
@@ -17,7 +16,7 @@ if !exists('b:loaded_dn_utils')
 	echohl ErrorMsg
 	echo 'Cannot load dn-latex plugin'
 	echo 'because dn-utils plugin is missing'
-	echohl nil 
+	echohl nil
     finish
 endif                                                                " }}}2
 " prevent errors from line continuation                                {{{2
@@ -39,9 +38,9 @@ endif                                                                " }}}3
 if !exists('b:dn_help_topics')
     let b:dn_help_topics = {}
 endif
-let b:dn_help_topics['tex'] = { 
-            \ 'spacing'          : 'tex_spacing', 
-            \ 'compiler commands': 'tex_compiler_commands', 
+let b:dn_help_topics['tex'] = {
+            \ 'spacing'          : 'tex_spacing',
+            \ 'compiler commands': 'tex_compiler_commands',
             \ 'viewing pdf'      : 'tex_view_pdf',
             \ 'snippets'         : 'tex_snippets',
             \ }                                                      " }}}3
@@ -49,13 +48,13 @@ let b:dn_help_topics['tex'] = {
 if !exists('b:dn_help_data')
     let b:dn_help_data = {}
 endif
-let b:dn_help_data['tex_spacing'] = [ 
-            \ 'Spacing:', 
-            \ '', 
-            \ ' ', '', 
+let b:dn_help_data['tex_spacing'] = [
+            \ 'Spacing:',
+            \ '',
+            \ ' ', '',
             \ 'English (American) spacing: uses double-spacing ',
             \ 'between sentences. It is considered somewhat ',
-            \ 'outdated but remains the TeX default. The different ', 
+            \ 'outdated but remains the TeX default. The different ',
             \ 'interword and inter-sentence space widths results ',
             \ 'in problems determining whether periods end ',
             \ 'sentences or abbreviations. Ambiguity can be ',
@@ -69,16 +68,16 @@ let b:dn_help_data['tex_spacing'] = [
             \ 'same line. A tie following a period has the side ',
             \ 'effect of forcing an interword space, hence: ',
             \ '''Mr.~Rogers watched Richard III\@.''',
-            \ '', 
-            \ ' ', '', 
+            \ '',
+            \ ' ', '',
             \ 'French spacing: uses single-spacing between ',
             \ 'sentences. This is modern usage and is the default ',
             \ 'for documents created ',
             \ 'by dn-latex -- the preamble contains a ',
             \ '\frenchspacing command and there is no need to use ',
             \ '''\ '', ''~'' or ''\@.'' tokens for spacing.',
-            \ '', 
-            \ ' ', '', 
+            \ '',
+            \ ' ', '',
             \ 'Thin spaces: some text elements should not be ',
             \ 'adjacent but neither should they have a full ',
             \ 'interword space. In such cases use a thin space ',
@@ -88,53 +87,53 @@ let b:dn_help_data['tex_spacing'] = [
             \ '(huge), and ''\!'' (negative space).',
             \ '',
             \ ' ', '',
-            \ 'Italics: there can be problematic spacing when ', 
+            \ 'Italics: there can be problematic spacing when ',
             \ 'italicised text ends and normal text resumes. The ',
             \ '''textit'' environment performs an automatic italic ',
             \ 'correction to adjust the spacing.',
             \ ]
-let b:dn_help_data['tex_compiler_commands'] = [ 
-            \ 'Compiler commands:', 
-            \ '', 
-            \ ' ', '', 
+let b:dn_help_data['tex_compiler_commands'] = [
+            \ 'Compiler commands:',
+            \ '',
+            \ ' ', '',
             \ '\l -- invokes tex compiler once (appears to be same as',
             \ '',
-            \ '      automatic background compiler command.', 
+            \ '      automatic background compiler command.',
             \ '',
-            \ ' ', '', 
-            \ ':MakeLatex -- makes whole document with cross-refs, etc.', 
+            \ ' ', '',
+            \ ':MakeLatex -- makes whole document with cross-refs, etc.',
             \ '',
-            \ ' ', '', 
+            \ ' ', '',
             \ 'NOTE: bibtex-related commands only work reliably with an',
-            \ '', 
-            \ '      absolute filepath for the bib database.', 
-            \ '', 
-            \ ' ', '', 
+            \ '',
+            \ '      absolute filepath for the bib database.',
+            \ '',
+            \ ' ', '',
             \ '\b -- invokes bibtex compiler (and tex compiler if need to',
-            \ '', 
+            \ '',
             \ '      first generate aux file)',
-            \ '', 
+            \ '',
             \ '   -- equivalent to '':Bibtex!'' command',
             \ ]
-let b:dn_help_data['tex_view_pdf'] = [ 
-            \ 'Viewing pdf output:', 
-            \ '', 
-            \ ' ', '', 
-            \ '\v -- invokes pdf viewer', 
-            \ '', 
-            \ '   -- equivalent to ''F3'' mapping', 
-            \ '', 
-            \ '   -- equivalent to '':View'' command', 
-            \ '', 
-            \ ' ', '', 
-            \ '\f -- forward search (synchronise vim and pdf viewer)', 
-            \ '', 
-            \ '   -- equivalent to '':SyncTex'' command', 
+let b:dn_help_data['tex_view_pdf'] = [
+            \ 'Viewing pdf output:',
+            \ '',
+            \ ' ', '',
+            \ '\v -- invokes pdf viewer',
+            \ '',
+            \ '   -- equivalent to ''F3'' mapping',
+            \ '',
+            \ '   -- equivalent to '':View'' command',
+            \ '',
+            \ ' ', '',
+            \ '\f -- forward search (synchronise vim and pdf viewer)',
+            \ '',
+            \ '   -- equivalent to '':SyncTex'' command',
             \ ]
-let b:dn_help_data['tex_snippets'] = [ 
-            \ 'Defined UltiSnips snippets:', 
-            \ '', 
-            \ ' ', '', 
+let b:dn_help_data['tex_snippets'] = [
+            \ 'Defined UltiSnips snippets:',
+            \ '',
+            \ ' ', '',
             \ 'begin:     generic environment wrapper',
             \ '',
             \ 'tab:       table environment',
@@ -218,12 +217,12 @@ let b:dn_help_data['tex_snippets'] = [
 "   . used in function 's:getDocType'
 let s:doc_types = {
             \ 'Standard LaTeX 2e article class': 'article',
-            \ 'Standard LaTeX 2e report class' : 'report', 
+            \ 'Standard LaTeX 2e report class' : 'report',
             \ 'Standard LaTeX 2e book class'   : 'book',
             \ 'Beamer class for presentations' : 'beamer',
             \ }                                                      " }}}3
 " - information about doc types (s:doc_type_info)                      {{{3
-"   . info includes template file name and data items to be 
+"   . info includes template file name and data items to be
 "     supplied by the user
 "   . Dictionary(
 "       key   : doc type,
@@ -305,96 +304,96 @@ let s:chars['checkmark (✓)']     = '\checkmark{}'
 let s:chars['ballot x (✗)']      = '\XSolidBrush{}'                  " }}}3
 " - reserved                                                           {{{3
 let s:chars['latex reserved']  = {
-            \ 'backslash (\)'   : '\textbackslash{}', 
-            \ 'underscore (_)'  : '\_', 
-            \ 'percent (%)'     : '\%', 
-            \ 'open brace ({)'  : '\{', 
-            \ 'close brace (})' : '\}', 
-            \ 'ampersand (&)'   : '\&', 
-            \ 'hash (#)'        : '\#' 
+            \ 'backslash (\)'   : '\textbackslash{}',
+            \ 'underscore (_)'  : '\_',
+            \ 'percent (%)'     : '\%',
+            \ 'open brace ({)'  : '\{',
+            \ 'close brace (})' : '\}',
+            \ 'ampersand (&)'   : '\&',
+            \ 'hash (#)'        : '\#'
             \ }                                                      " }}}3
 " - math/scientific                                                    {{{3
-let s:chars['math/scientific'] = { 
-            \ 'math asterisk (∗)'   : '\textasteriskcentered{}', 
-            \ 'math multiply (×)'   : '$\times$', 
-            \ 'micro (µ)'           : '\micro{}', 
-            \ 'degrees (°)'         : '\degree{}', 
-            \ 'degrees celsius (℃)' : '\textcelsius' 
+let s:chars['math/scientific'] = {
+            \ 'math asterisk (∗)'   : '\textasteriskcentered{}',
+            \ 'math multiply (×)'   : '$\times$',
+            \ 'micro (µ)'           : '\micro{}',
+            \ 'degrees (°)'         : '\degree{}',
+            \ 'degrees celsius (℃)' : '\textcelsius'
             \ }                                                      " }}}3
 " - currency                                                           {{{3
-let s:chars['currency']        = { 
-            \ 'dollar ($)' : '\$', 
-            \ 'pound (£)'  : '\pounds{}', 
-            \ 'euro (€)'   : '\texteuro{}', 
-            \ 'cent (¢)'   : '\textcent{}' 
+let s:chars['currency']        = {
+            \ 'dollar ($)' : '\$',
+            \ 'pound (£)'  : '\pounds{}',
+            \ 'euro (€)'   : '\texteuro{}',
+            \ 'cent (¢)'   : '\textcent{}'
             \ }                                                      " }}}3
 " - arrows                                                             {{{3
-let s:chars['arrows']          = { 
-            \ 'left (←)'       : '$\leftarrow$', 
-            \ 'long left (⟵)'  : '$\longleftarrow$', 
-            \ 'right (→)'      : '$\rightarrow$', 
-            \ 'long right (⟶)' : '$\longrightarrow$' 
+let s:chars['arrows']          = {
+            \ 'left (←)'       : '$\leftarrow$',
+            \ 'long left (⟵)'  : '$\longleftarrow$',
+            \ 'right (→)'      : '$\rightarrow$',
+            \ 'long right (⟶)' : '$\longrightarrow$'
             \ }                                                      " }}}3
 " - greek upper                                                        {{{3
-let s:chars['greek upper']     = { 
-            \ 'Alpha (Α)'   : 'A', 
-            \ 'Beta (Β)'    : 'B', 
-            \ 'Gamma (Γ)'   : '$\Gamma$', 
-            \ 'Delta (Δ)'   : '$\Delta', 
-            \ 'Epsilon (Ε)' : 'E', 
-            \ 'Zeta (Ζ)'    : 'Z', 
-            \ 'Eta (Η)'     : 'H', 
-            \ 'Theta (Θ)'   : '$\Theta$', 
-            \ 'Iota (Ι)'    : 'I', 
-            \ 'Kappa (Κ)'   : 'K', 
-            \ 'Lambda (Λ)'  : '$\Lambda$', 
-            \ 'Mu (Μ)'      : 'M', 
-            \ 'Nu (Ν)'      : 'N', 
-            \ 'Xi (Ξ)'      : '$\Xi$', 
-            \ 'Omicron (Ο)' : 'O', 
-            \ 'Pi (Π)'      : '$\Pi$', 
-            \ 'Rho (Ρ)'     : 'P', 
-            \ 'Sigma (Σ)'   : '$\Sigma$', 
-            \ 'Tau (Τ)'     : 'T', 
-            \ 'Upsilon (Υ)' : '$\Upsilon$', 
-            \ 'Phi (Φ)'     : '$\Phi$', 
-            \ 'Chi (Χ)'     : 'X', 
-            \ 'Psi (Ψ)'     : '$\Psi$', 
-            \ 'Omega (Ω)'   : '$\Omega$' 
+let s:chars['greek upper']     = {
+            \ 'Alpha (Α)'   : 'A',
+            \ 'Beta (Β)'    : 'B',
+            \ 'Gamma (Γ)'   : '$\Gamma$',
+            \ 'Delta (Δ)'   : '$\Delta',
+            \ 'Epsilon (Ε)' : 'E',
+            \ 'Zeta (Ζ)'    : 'Z',
+            \ 'Eta (Η)'     : 'H',
+            \ 'Theta (Θ)'   : '$\Theta$',
+            \ 'Iota (Ι)'    : 'I',
+            \ 'Kappa (Κ)'   : 'K',
+            \ 'Lambda (Λ)'  : '$\Lambda$',
+            \ 'Mu (Μ)'      : 'M',
+            \ 'Nu (Ν)'      : 'N',
+            \ 'Xi (Ξ)'      : '$\Xi$',
+            \ 'Omicron (Ο)' : 'O',
+            \ 'Pi (Π)'      : '$\Pi$',
+            \ 'Rho (Ρ)'     : 'P',
+            \ 'Sigma (Σ)'   : '$\Sigma$',
+            \ 'Tau (Τ)'     : 'T',
+            \ 'Upsilon (Υ)' : '$\Upsilon$',
+            \ 'Phi (Φ)'     : '$\Phi$',
+            \ 'Chi (Χ)'     : 'X',
+            \ 'Psi (Ψ)'     : '$\Psi$',
+            \ 'Omega (Ω)'   : '$\Omega$'
             \ }                                                      " }}}3
 " - greek lower                                                        {{{3
-let s:chars['greek lower']     = { 
-            \ 'alpha (α)'      : '$\alpha$', 
-            \ 'beta (β)'       : '$\beta$', 
-            \ 'gamma (γ)'      : '$\gamma$', 
-            \ 'delta (δ)'      : '$\delta$', 
-            \ 'epsilon (ϵ)'    : '$\epsilon$', 
-            \ 'varepsilon (ε)' : '$\varepsilon$', 
-            \ 'zeta (ζ)'       : '$\zeta$', 
-            \ 'eta (η)'        : '$\eta$', 
-            \ 'theta (θ)'      : '$\theta$', 
-            \ 'vartheta (ϑ)'   : '$\vartheta$', 
-            \ 'iota (ι)'       : '$\iota$', 
-            \ 'kappa (κ)'      : '$\kappa$', 
-            \ 'varkappa (ϰ)'   : '$\varkappa$', 
-            \ 'lambda (λ)'     : '$\lambda$', 
-            \ 'mu (μ)'         : '$\mu$', 
-            \ 'nu (ν)'         : '$\nu$', 
-            \ 'xi (ξ)'         : '$\xi$', 
-            \ 'omicron (ο)'    : 'o', 
-            \ 'pi (π)'         : '$\pi$', 
-            \ 'varpi (ϖ)'      : '$\varpi$', 
-            \ 'rho (ρ)'        : '$\rho$', 
-            \ 'varrho (ϱ)'     : '$\varrho$', 
-            \ 'sigma (σ)'      : '$\sigma$', 
-            \ 'varsigma (ς)'   : '$\varsigma$', 
-            \ 'tau (τ)'        : '$\tau$', 
-            \ 'upsilon (υ)'    : '$\upsilon$', 
-            \ 'phi (ϕ)'        : '$\phi$', 
-            \ 'varphi (φ)'     : '$\varphi$', 
-            \ 'chi (χ)'        : '$\chi$', 
-            \ 'psi (ψ)'        : '$\psi$', 
-            \ 'omega (ω)'      : '$\omega$' 
+let s:chars['greek lower']     = {
+            \ 'alpha (α)'      : '$\alpha$',
+            \ 'beta (β)'       : '$\beta$',
+            \ 'gamma (γ)'      : '$\gamma$',
+            \ 'delta (δ)'      : '$\delta$',
+            \ 'epsilon (ϵ)'    : '$\epsilon$',
+            \ 'varepsilon (ε)' : '$\varepsilon$',
+            \ 'zeta (ζ)'       : '$\zeta$',
+            \ 'eta (η)'        : '$\eta$',
+            \ 'theta (θ)'      : '$\theta$',
+            \ 'vartheta (ϑ)'   : '$\vartheta$',
+            \ 'iota (ι)'       : '$\iota$',
+            \ 'kappa (κ)'      : '$\kappa$',
+            \ 'varkappa (ϰ)'   : '$\varkappa$',
+            \ 'lambda (λ)'     : '$\lambda$',
+            \ 'mu (μ)'         : '$\mu$',
+            \ 'nu (ν)'         : '$\nu$',
+            \ 'xi (ξ)'         : '$\xi$',
+            \ 'omicron (ο)'    : 'o',
+            \ 'pi (π)'         : '$\pi$',
+            \ 'varpi (ϖ)'      : '$\varpi$',
+            \ 'rho (ρ)'        : '$\rho$',
+            \ 'varrho (ϱ)'     : '$\varrho$',
+            \ 'sigma (σ)'      : '$\sigma$',
+            \ 'varsigma (ς)'   : '$\varsigma$',
+            \ 'tau (τ)'        : '$\tau$',
+            \ 'upsilon (υ)'    : '$\upsilon$',
+            \ 'phi (ϕ)'        : '$\phi$',
+            \ 'varphi (φ)'     : '$\varphi$',
+            \ 'chi (χ)'        : '$\chi$',
+            \ 'psi (ψ)'        : '$\psi$',
+            \ 'omega (ω)'      : '$\omega$'
             \ }                                                      " }}}3
                                                                      " }}}2
 " plugin resources directory                                   "       {{{2
@@ -415,7 +414,7 @@ setlocal expandtab
 setlocal textwidth=72
 setlocal formatoptions+=tca
 setlocal formatoptions-=l                                            " }}}2
-                                                                 
+
 " FUNCTIONS:                                                           {{{1
 " Function: DNL_InsertSpecialChar                                      {{{2
 " Purpose:  insert special character
@@ -809,7 +808,7 @@ function! s:getDocData(type)
         if exists('s:data_item_definitions[l:item]')
             call add(l:items, deepcopy(s:data_item_definitions[l:item]))
         else
-            let l:msg = "Doc type '" . a:type . "' user data item '" 
+            let l:msg = "Doc type '" . a:type . "' user data item '"
             let l:msg .= l:item . "' is not defined"
             call dn#util#warn(l:msg)
         endif
@@ -872,7 +871,7 @@ function! s:getTemplate(type)
     let l:template_content = readfile(l:template_file)
     " check for success
     if len(l:template_content) == 0
-        call dn#util#error('No content read from template ' 
+        call dn#util#error('No content read from template '
                     \ . l:template_file . "'")
         return []
     endif
@@ -1043,7 +1042,7 @@ function! s:validVar(var, kind)
             " - now check for duplicates
             for l:element_name in l:element_names
                 if count(l:element_names, l:element_name) > 1
-                    let l:msg = l:name . ' has multiple elements with ' 
+                    let l:msg = l:name . ' has multiple elements with '
                     let l:msg .= "identical name '" . l:element_name . "':"
                     for l:item in a:var
                         if l:item.name == l:element_name
@@ -1061,7 +1060,7 @@ function! s:validVar(var, kind)
         for l:item in a:var | call add(l:tokens, l:item.token) | endfor
         for l:token in l:tokens
             if count(l:tokens, l:token) > 1
-                let l:msg = l:name . ' has multiple elements with ' 
+                let l:msg = l:name . ' has multiple elements with '
                 let l:msg .= "identical token '" . l:token . "':"
                     for l:item in a:var
                         if l:item.token == l:token
@@ -1089,11 +1088,11 @@ function! s:deactivateRightMapping()
     try
         nunmap <Right>
     catch /^Vim\((\a\+)\)\=:E31:/
-    endtry                             
+    endtry
     try
         nunmap <Right>
     catch /^Vim\((\a\+)\)\=:E31:/
-    endtry                             
+    endtry
 endfunction                                                          " }}}2
 
 " MAPPINGS:                                                            {{{1
