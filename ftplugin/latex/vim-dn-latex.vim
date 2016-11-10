@@ -11,7 +11,7 @@ scriptencoding utf-8
 if exists('b:do_not_load_vim_dn_latex') | finish | endif
 let b:do_not_load_vim_dn_latex = 1                                   " }}}2
 " relies upon dn-utils                                                 {{{2
-if !exists('b:loaded_dn_utils')
+if !exists('g:loaded_dn_utils')
 	if mode() ==# 'i' | execute "normal \<Esc>" | endif
 	echohl ErrorMsg
 	echo 'Cannot load dn-latex plugin'
@@ -25,30 +25,30 @@ set cpoptions&vim                                                    " }}}2
 
 " VARIABLES:                                                           {{{1
 " relies upon dn-utils booleans                                        {{{2
-" uses variables 'b:dn_true' and 'b:dn_false'                    }}}2
+" uses variables 'g:dn_true' and 'g:dn_false'                    }}}2
 " contribute to dn-utils help                                          {{{2
-" - add to plugins list (b:dn_help_plugins)                            {{{3
-if !exists('b:dn_help_plugins')
-    let b:dn_help_plugins = {}
+" - add to plugins list (g:dn_help_plugins)                            {{{3
+if !exists('g:dn_help_plugins')
+    let g:dn_help_plugins = {}
 endif
-if index(b:dn_help_plugins, 'tex', b:dn_true) == -1
-    call add(b:dn_help_plugins, 'tex')
+if index(g:dn_help_plugins, 'tex', g:dn_true) == -1
+    call add(g:dn_help_plugins, 'tex')
 endif                                                                " }}}3
-" - add help topics (b:dn_help_topics)                                 {{{3
-if !exists('b:dn_help_topics')
-    let b:dn_help_topics = {}
+" - add help topics (g:dn_help_topics)                                 {{{3
+if !exists('g:dn_help_topics')
+    let g:dn_help_topics = {}
 endif
-let b:dn_help_topics['tex'] = {
+let g:dn_help_topics['tex'] = {
             \ 'spacing'          : 'tex_spacing',
             \ 'compiler commands': 'tex_compiler_commands',
             \ 'viewing pdf'      : 'tex_view_pdf',
             \ 'snippets'         : 'tex_snippets',
             \ }                                                      " }}}3
-" - add help data for help topics (b:dn_help_data)                     {{{3
-if !exists('b:dn_help_data')
-    let b:dn_help_data = {}
+" - add help data for help topics (g:dn_help_data)                     {{{3
+if !exists('g:dn_help_data')
+    let g:dn_help_data = {}
 endif
-let b:dn_help_data['tex_spacing'] = [
+let g:dn_help_data['tex_spacing'] = [
             \ 'Spacing:',
             \ '',
             \ ' ', '',
@@ -92,7 +92,7 @@ let b:dn_help_data['tex_spacing'] = [
             \ '''textit'' environment performs an automatic italic ',
             \ 'correction to adjust the spacing.',
             \ ]
-let b:dn_help_data['tex_compiler_commands'] = [
+let g:dn_help_data['tex_compiler_commands'] = [
             \ 'Compiler commands:',
             \ '',
             \ ' ', '',
@@ -115,7 +115,7 @@ let b:dn_help_data['tex_compiler_commands'] = [
             \ '',
             \ '   -- equivalent to '':Bibtex!'' command',
             \ ]
-let b:dn_help_data['tex_view_pdf'] = [
+let g:dn_help_data['tex_view_pdf'] = [
             \ 'Viewing pdf output:',
             \ '',
             \ ' ', '',
@@ -130,7 +130,7 @@ let b:dn_help_data['tex_view_pdf'] = [
             \ '',
             \ '   -- equivalent to '':SyncTex'' command',
             \ ]
-let b:dn_help_data['tex_snippets'] = [
+let g:dn_help_data['tex_snippets'] = [
             \ 'Defined UltiSnips snippets:',
             \ '',
             \ ' ', '',
@@ -427,7 +427,7 @@ setlocal formatoptions-=l                                            " }}}2
 function! DNL_InsertSpecialChar(...)
 	echo ''   | " clear command line
     " variables
-    let l:insert = (a:0 > 0 && a:1) ? b:dn_true : b:dn_false
+    let l:insert = (a:0 > 0 && a:1) ? g:dn_true : g:dn_false
     " select special character
     let l:char = dn#util#menuSelect(s:chars,
      \                              'Select character to insert:')
@@ -458,7 +458,7 @@ endfunction
 function! DNL_AlignTable(...)
 	echo ''   | " clear command line
     " variables
-    let l:insert = (a:0 > 0 && a:1) ? b:dn_true : b:dn_false
+    let l:insert = (a:0 > 0 && a:1) ? g:dn_true : g:dn_false
     let l:start = 0 | let l:end = 0    " table beginning and end
     let l:start_token = '\\begin{tabular}' | let l:end_token = '\\end{tabular}'
     let l:col_sep = ' &'    " column separator token
@@ -554,19 +554,19 @@ function! DNL_SyncBeamer()
     if !has('unix')
         call dn#util#error('Beamer installation not yet '
                     \      . 'implemented on this OS')
-        return b:dn_false
+        return g:dn_false
     endif
     " need rsync
     if !executable('rsync')
         call dn#util#error("Need 'rsync' to synchronise beamer files")
-        return b:dn_false
+        return g:dn_false
     endif
     " set source directory
     let l:source = s:getDir('beamer')
-    if !isdirectory(l:source) | return b:dn_false | endif
+    if !isdirectory(l:source) | return g:dn_false | endif
     " set target directory
     let l:target = s:getDir('texmfhome')
-    if !isdirectory(l:target) | return b:dn_false | endif
+    if !isdirectory(l:target) | return g:dn_false | endif
     " time to sync
     " - capture change summary with '-i'
     " - add terminal slashes as they are supposed to be important for rsync
@@ -580,11 +580,11 @@ function! DNL_SyncBeamer()
         call dn#util#error('------------------------------------------')
         call dn#util#error(v:shell_error)
         call dn#util#error('------------------------------------------')
-        return b:dn_false
+        return g:dn_false
     endif
     if !isdirectory(l:target)
         call dn#util#error('Failed to create TEXMFHOME directory')
-        return b:dn_false
+        return g:dn_false
     endif
     " update local tex ls-R database if changes made to beamer files
     if strlen(l:changes) > 0
@@ -598,12 +598,12 @@ function! DNL_SyncBeamer()
             call dn#util#error(v:shell_error)
             call dn#util#error('--------------------------'
                         \      . '----------------------')
-            return b:dn_false
+            return g:dn_false
         endif
     endif
     " guess we made it!
     echo 'Beamer files synchronised'
-    return b:dn_true
+    return g:dn_true
 endfunction                                                          " }}}2
 " Function: DNL_InsertTemplate                                         {{{2
 " Purpose:  insert template and ready it for use
@@ -648,7 +648,7 @@ function! s:resourcesDirIsSet()
     if exists('s:plugin_resources_dir')
         if strlen('s:plugin_resources_dir') > 0
             if isdirectory(s:plugin_resources_dir)
-                return b:dn_true
+                return g:dn_true
             else    " bad directory (how the hell did that happen?
                 let s:plugin_resources_dir = ''
             endif
@@ -658,17 +658,17 @@ function! s:resourcesDirIsSet()
     if strlen(l:var) > 0
         if isdirectory(l:var)
             let s:plugin_resources_dir = l:var
-            return b:dn_true
+            return g:dn_true
         else
             let l:msg = 'Could not find valid plugin resources directory'
             call dn#util#error(l:msg)
             call dn#util#error('Plugin resources directory was not set')
-            return b:dn_false
+            return g:dn_false
         endif
     else    " empty string returned
         call dn#util#error('Could not detect plugin resources directory')
         call dn#util#error('Plugin resources directory was not set')
-        return b:dn_false
+        return g:dn_false
     endif
 endfunction                                                          " }}}2
 " Function: s:getDir                                                   {{{2
@@ -730,7 +730,7 @@ function! s:getTexmfhomeDir()
     " need kpsewhich
     if !executable('kpsewhich')
         call dn#util#error('Need ''kpsewhich'' to locate TEXMFHOME')
-        return b:dn_false
+        return g:dn_false
     endif
     " locate TEXMFHOME
     " - cannot use shellescape because it results in  shell interpreting
@@ -742,11 +742,11 @@ function! s:getTexmfhomeDir()
         call dn#util#error('----------------------------------------')
         call dn#util#error(v:shell_error)
         call dn#util#error('----------------------------------------')
-        return b:dn_false
+        return g:dn_false
     endif
     if l:dir =~# '^$'
         call dn#util#error('Failed to locate TEXMFHOME')
-        return b:dn_false
+        return g:dn_false
     endif
     " create directory if it does not exist
     if isdirectory(l:dir)    " success
@@ -759,13 +759,13 @@ function! s:getTexmfhomeDir()
             call dn#util#error('----------------------------------------')
             call dn#util#error(v:shell_error)
             call dn#util#error('----------------------------------------')
-            return b:dn_false
+            return g:dn_false
         endif
         if isdirectory(l:dir)
             return l:dir
         else    " something bad happened
             call dn#util#error('Failed to create TEXMFHOME directory')
-            return b:dn_false
+            return g:dn_false
         endif
     endif
 endfunction                                                          " }}}2
@@ -1099,7 +1099,7 @@ endfunction                                                          " }}}2
 "                                                                }}}2
 " \is -> DNL_InsertSpecialChar                                         {{{2
 " insert special character
-imap <buffer> <unique> <Plug>DnIS <Esc>:call DNL_InsertSpecialChar(b:dn_true)<CR>
+imap <buffer> <unique> <Plug>DnIS <Esc>:call DNL_InsertSpecialChar(g:dn_true)<CR>
 nmap <buffer> <unique> <Plug>DnIS :call DNL_InsertSpecialChar()<CR>
 if !hasmapto('<Plug>DnIS', 'i')
 	imap <buffer> <unique> <LocalLeader>is <Plug>DnIS
@@ -1109,7 +1109,7 @@ if !hasmapto('<Plug>DnIS', 'n')
 endif                                                                " }}}2
 " \at -> DNL_AlignTable                                                {{{2
 " align source table columns
-imap <buffer> <unique> <Plug>DnAT <Esc>:call DNL_AlignTable(b:dn_true)<CR>
+imap <buffer> <unique> <Plug>DnAT <Esc>:call DNL_AlignTable(g:dn_true)<CR>
 nmap <buffer> <unique> <Plug>DnAT :call DNL_AlignTable()<CR>
 if !hasmapto('<Plug>DnAT', 'i')
 	imap <buffer> <unique> <LocalLeader>at <Plug>DnAT
