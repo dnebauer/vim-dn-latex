@@ -85,7 +85,7 @@ if has('unix') && !exists('b:atprc_read_once')
         let l:contents = readfile(b:dna_atprc_file)
         for l:line in l:contents
             let l:tokens = split(l:line, ' ')
-            let l:tokens = filter(l:tokens, "v:val !~ '^$'")
+            let l:tokens = filter(l:tokens, "v:val !~? '^$'")
             " must be ['workingdir',<nonzero>]
             if len(l:tokens) == 2 && l:tokens[0] =~? '^workingdir$'
                         \ && l:tokens[1] != g:dn_false
