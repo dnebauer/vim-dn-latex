@@ -11,7 +11,8 @@ scriptencoding utf-8
 if exists('b:do_not_load_vim_dn_latex') | finish | endif
 let b:do_not_load_vim_dn_latex = 1                                   " }}}2
 " relies upon dn-utils                                                 {{{2
-if !exists('g:loaded_dn_utils')
+silent! call dn#util#rev()  " load function if available
+if !(exists('*dn#util#rev') && dn#util#rev() =~? '\v^\d{8,}$')
 	if mode() ==# 'i' | execute "normal \<Esc>" | endif
 	echohl ErrorMsg
 	echo 'Cannot load dn-latex plugin'
