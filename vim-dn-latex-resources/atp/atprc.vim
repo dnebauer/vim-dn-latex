@@ -14,8 +14,8 @@ nmap <buffer> <silent> >E <Plug>JumptoNextEnvironmentzz
 nmap <buffer> <silent> <E <Plug>JumptoPreviousEnvironmentzz
 
 " show progress information on tex compilation
-let g:atp_ProgressBar=g:dn_true
-let g:atp_statusNotif=g:dn_true
+let g:atp_ProgressBar=v:true
+let g:atp_statusNotif=v:true
 
 " switching to lualatex as successor to pdflatex
 let b:atp_TexCompiler='lualatex'
@@ -63,33 +63,33 @@ nnoremap <buffer> <silent> <Leader>U :CommandTBuffer<CR>
 " - only unix
 if has('unix') && !exists('b:atprc_read_once')
     let b:dna_atprc_file = '.dna_atprc'
-    let b:dn_error = g:dn_false
+    let b:dn_error = v:false
     function! DnaRunCommand(cmd)
         let l:feedback = system(a:cmd)
         if v:shell_error
-            let b:dn_error = g:dn_true
+            let b:dn_error = v:true
             echoerr 'Command failed: ' . a:cmd
             echoerr 'Shell feedback: ' . l:feedback
-            return g:dn_false
+            return v:false
         endif
-        return g:dn_true
+        return v:true
     endfunction
     function! DnaAtprcFileExists()
         return filereadable(b:dna_atprc_file)
     endfunction
     function! DnaUseWorkingDir()
         if !DnaAtprcFileExists()
-            return g:dn_false
+            return v:false
         endif
-        let l:retval = g:dn_false
+        let l:retval = v:false
         let l:contents = readfile(b:dna_atprc_file)
         for l:line in l:contents
             let l:tokens = split(l:line, ' ')
             let l:tokens = filter(l:tokens, "v:val !~? '^$'")
             " must be ['workingdir',<nonzero>]
             if len(l:tokens) == 2 && l:tokens[0] =~? '^workingdir$'
-                        \ && l:tokens[1] != g:dn_false
-                let l:retval = g:dn_true
+                        \ && l:tokens[1] != v:false
+                let l:retval = v:true
             endif
         endfor
         return l:retval
@@ -105,7 +105,7 @@ if has('unix') && !exists('b:atprc_read_once')
         let l:msg = 'Use intermediate subdirectory '
                     \ . 'and symlink to pdf output?'
         let l:wants = confirm(l:msg, "&Yes\n&No", 1, 'Q')
-        if l:wants != g:dn_true | let l:wants = g:dn_false | endif
+        if l:wants != v:true | let l:wants = v:false | endif
         return l:wants
     endfunction
     function! DnaSubdirExists()
@@ -114,9 +114,9 @@ if has('unix') && !exists('b:atprc_read_once')
     function! DnaPdfLinkExists()
         call system('test -L ' . b:dn_outfile)
         if v:shell_error
-            return g:dn_false
+            return v:false
         else
-            return g:dn_true
+            return v:true
         endif
     endfunction
     function! DnaSubdirSetUp()
@@ -140,13 +140,13 @@ if has('unix') && !exists('b:atprc_read_once')
     let b:dn_outfile = expand('%:r') . '.pdf'
     let b:dn_target = b:dn_workdir . '/' . b:dn_outfile
     " decide whether to create subdir and symlink
-    let b:make_subdir = g:dn_false
+    let b:make_subdir = v:false
     if DnaAtprcFileExists()    " user has set preference
         let b:make_subdir = DnaUseWorkingDir()
     else    " user has not set preference
         " but working directory and pdf link may already exist
         if DnaSubdirSetUp()    " fully set up - accept as preference
-            let b:make_subdir = g:dn_true
+            let b:make_subdir = v:true
         elseif DnaSubdirExists() || DnaPdfLinkExists()
             " partially set up - user must decide
             if DnaSubdirExists()
@@ -176,7 +176,7 @@ if has('unix') && !exists('b:atprc_read_once')
             if !mkdir(b:atp_OutDir)
                 echoerr 'unable to create latex working directory:'
                 echoerr '  ' . b:atp_OutDir
-                let b:make_subdir = g:dn_false
+                let b:make_subdir = v:false
             endif
         endif
     endif
@@ -217,6 +217,6 @@ endif
 " - sometimes it is important to know which iteration it is
 " - this if branch should stay the last thing in this file
 if !exists('b:atprc_read_once')
-    let b:atprc_read_once = g:dn_true
+    let b:atprc_read_once = v:true
 endif
 
