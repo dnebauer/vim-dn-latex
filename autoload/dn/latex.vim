@@ -20,10 +20,8 @@ set cpoptions&vim
 " Vim. In fact, this plugin provides an atprc file that can be used as the
 " primary user atp configuration file, or can be called from it. Not all
 " features of this plugin require ATP, but some do.
-" 
-" This plugin also assumes the availability of the |dn-utils| plugin. It
-" relies on variables and functions provided by it. It contributes to the
-" dn-utils help system that is triggered by <Leader>help, usually \help.
+"
+" This plugin also assumes the availability of the "dn-utils.nvim" plugin.
 "
 " @subsection Templates
 "
@@ -59,7 +57,7 @@ set cpoptions&vim
 " "$HOME/.vim/bundle/vim-dn-latex/vim-dn-latex-resources/beamer/". If the
 " beamer files are installed in a different location the script needs to be
 " edited accordingly.
-" 
+"
 " The script cannot be distributed with the repository in such a way as to
 " automatically install on the client side. It must be installed by the
 " user. There are several methods by which the script can be called during
@@ -135,12 +133,12 @@ set cpoptions&vim
 "
 " The Automatic LaTeX Plugin is a latex plugin for latex (project page:
 " http://atp-vim.sourceforge.net/, repo: https://github.com/coot/atp_vim).
-" 
+"
 " This ftplugin provides a configuration file for ATP. The file can be used
 " as the base configuration file for ATP or can be sourced by it. The
 " configuration file is located in the "vim-dn-latex-resources/atp" directory
 " of the plugin.
-" 
+"
 " The configuration file has the following features:
 "
 " * Sets ATP to use vim regular expression syntax rather than python
@@ -155,29 +153,29 @@ set cpoptions&vim
 "
 " * Switches to the lualatex engine by setting |b:atp_TexCompiler| to
 "   "lualatex").
-" 
+"
 " * Sets the compilation switch '-recorder' by adding it to
 "   |b:atp_TexOptions|.
-" 
+"
 " * Plays nice with the Command-T plugin. The Command-T plugin provides
 "   mappings for <Leader>l and <Leader>u (defaults to \l and \u) which call
 "   commands "CommandT" and "CommandTBuffer". ATP also maps to <Leader> and
 "   <Leader>u. Command-T, however, is well behaved and does not overwrite the
-"   ATP mappings. 
-" 
+"   ATP mappings.
+"
 " * To make the Command-T mappings available while editing a tex file this
 "   configuration file creates alternate mappings <Leader>T and <Leader>U,
 "   usually \T and \U, for |:CommandT| and |:CommandTBuffer|, respectively.
 "   These mappings are defined only for the buffer.
-" 
+"
 " * Play nice with the UltiSnips plugin. Both UltiSnips and ATP provide
 "   mappings for <C-j> and <C-k>. The ATP mappings are local to the buffer
 "   while the UltiSnips mappings are global. Removing the local ATP mappings
 "   leaves the UltiSnips amppings intact.
-" 
+"
 " * Also deactivates the |<Right>| mapping as it interferes with the <C-j>
 "   mapping.
-" 
+"
 " * Optionally configures vim project (ATP considers every directory to be
 "   a "project") to use a subdirectory for compilation. The subdirectory is
 "   named "working". For each project the user chooses whether or not to use a
@@ -192,6 +190,8 @@ set cpoptions&vim
 
 " TODO: replace template dir "@pkgdatatemplates_dir@/" with
 "       bundle directory
+
+" }}}1
 
 " Script variables
 
@@ -398,6 +398,15 @@ let s:chars['greek lower']     = {
 ""
 " Plugin resources directory.
 let s:plugin_resources_dir = ''
+
+""
+" dn-utils.nvim functions.
+let s:dn_util_error = luaeval('require("dn-utils").error')
+let s:dn_util_get_rtp_dir = luaeval('require("dn-utils").get_rtp_dir')
+let s:dn_util_match_count = luaeval('require("dn-utils").match_count')
+let s:dn_util_menu_select = luaeval('require("dn-utils").menu_select')
+let s:dn_util_pad_internal = luaeval('require("dn-utils").pad_internal')
+let s:dn_util_warn = luaeval('require("dn-utils").warning')
 " }}}1
 
 " Script functions
@@ -440,13 +449,13 @@ function! s:getDir(type)
                 \ 'texmfhome' : '',
                 \ }
     if !has_key(l:valid_types, a:type)
-        call dn#util#error("Invalid directory type requested '"
+        call s:dn_util_error("Invalid directory type requested '"
                     \      . a:type . "'")
         return 0
     endif
 	" require resources directory
     if !s:resourcesDirIsSet()
-        call dn#util#error('Unable to return ' . a:type . ' directory')
+        call s:dn_util_error('Unable to return ' . a:type . ' directory')
         return v:false
     endif
     " return requested directory
@@ -461,7 +470,7 @@ function! s:getDir(type)
         let l:dir = s:getTexmfhomeDir()
     endif
     if l:dir =~# '^$'
-        call dn#util#error("Unknown directory type '" . a:type . "'")
+        call s:dn_util_error("Unknown directory type '" . a:type . "'")
         return v:false
     endif
     if isdirectory(l:dir)
@@ -469,7 +478,7 @@ function! s:getDir(type)
     else
         let l:msg = "Invalid directory '" . l:dir
                     \ . " for directory type '" . a:type . "'"
-        call dn#util#error(l:msg)
+        call s:dn_util_error(l:msg)
         return v:false
     endif
 endfunction
@@ -486,7 +495,7 @@ function! s:getDocData(type)
     if a:type ==# '' | return [] | endif
     " - need a matching doc type with defined items
     if !exists("s:doc_type_info[a:type]['items']")
-        call dn#util#error("No data items defined for doc type '"
+        call s:dn_util_error("No data items defined for doc type '"
                     \      . a:type . "'")
         return []
     endif
@@ -498,7 +507,7 @@ function! s:getDocData(type)
         else
             let l:msg = "Doc type '" . a:type . "' user data item '"
             let l:msg .= l:item . "' is not defined"
-            call dn#util#warn(l:msg)
+            call s:dn_util_warn(l:msg)
         endif
     endfor
     unlet! l:item
@@ -512,7 +521,7 @@ function! s:getDocData(type)
         if l:value !=# ''
             let l:item['value'] = l:value
         else
-            call dn#util#warn('No value entered for ' . l:item.name)
+            call s:dn_util_warn('No value entered for ' . l:item.name)
         endif
         " - remove unneeded keys
         unlet l:item.name l:item.explain l:item.prompt
@@ -534,7 +543,7 @@ endfunction
 " Get document type. User selects document type but can abort operation.
 " Returns selected type |String|, and empty string if user aborts.
 function! s:getDocType()
-    let l:pick = dn#util#menuSelect(keys(s:doc_types),
+    let l:pick = s:dn_util_menu_select(keys(s:doc_types),
                 \                   'Select document type:')
     if l:pick ==# '' | return '' | endif
     return s:doc_types[l:pick]
@@ -554,7 +563,7 @@ function! s:getTemplate(type)
     if !exists("s:doc_type_info[a:type]['template']")
         let l:msg = "No template filename defined for doc type '"
                     \ . a:type . "'"
-        call dn#util#error(l:msg)
+        call s:dn_util_error(l:msg)
         return []
     endif
     " variables
@@ -564,7 +573,7 @@ function! s:getTemplate(type)
     let l:template_file = l:template_dir . '/'
                 \ . s:doc_type_info[a:type]['template']
     if !filereadable(l:template_file)
-        call dn#util#error("Unable to read template '"
+        call s:dn_util_error("Unable to read template '"
                     \      . l:template_file . "'")
         return []
     endif
@@ -572,7 +581,7 @@ function! s:getTemplate(type)
     let l:template_content = readfile(l:template_file)
     " check for success
     if len(l:template_content) == 0
-        call dn#util#error('No content read from template '
+        call s:dn_util_error('No content read from template '
                     \ . l:template_file . "'")
         return []
     endif
@@ -588,7 +597,7 @@ endfunction
 function! s:getTexmfhomeDir()
     " need kpsewhich
     if !executable('kpsewhich')
-        call dn#util#error('Need ''kpsewhich'' to locate TEXMFHOME')
+        call s:dn_util_error('Need ''kpsewhich'' to locate TEXMFHOME')
         return v:false
     endif
     " locate TEXMFHOME
@@ -597,14 +606,14 @@ function! s:getTexmfhomeDir()
     let l:cmd = 'kpsewhich --var-value TEXMFHOME'
     let l:dir = split(system(l:cmd), '\n')[0] . '/'
     if v:shell_error
-        call dn#util#error('Error occurred while locating TEXMFHOME:')
-        call dn#util#error('----------------------------------------')
-        call dn#util#error(v:shell_error)
-        call dn#util#error('----------------------------------------')
+        call s:dn_util_error('Error occurred while locating TEXMFHOME:')
+        call s:dn_util_error('----------------------------------------')
+        call s:dn_util_error(v:shell_error)
+        call s:dn_util_error('----------------------------------------')
         return v:false
     endif
     if l:dir =~# '^$'
-        call dn#util#error('Failed to locate TEXMFHOME')
+        call s:dn_util_error('Failed to locate TEXMFHOME')
         return v:false
     endif
     " create directory if it does not exist
@@ -614,16 +623,16 @@ function! s:getTexmfhomeDir()
         let l:cmd = 'mkdir -p ' . l:dir
         call system(l:cmd)
         if v:shell_error
-            call dn#util#error('Error occurred while creating TEXMFHOME:')
-            call dn#util#error('----------------------------------------')
-            call dn#util#error(v:shell_error)
-            call dn#util#error('----------------------------------------')
+            call s:dn_util_error('Error occurred while creating TEXMFHOME:')
+            call s:dn_util_error('----------------------------------------')
+            call s:dn_util_error(v:shell_error)
+            call s:dn_util_error('----------------------------------------')
             return v:false
         endif
         if isdirectory(l:dir)
             return l:dir
         else    " something bad happened
-            call dn#util#error('Failed to create TEXMFHOME directory')
+            call s:dn_util_error('Failed to create TEXMFHOME directory')
             return v:false
         endif
     endif
@@ -650,7 +659,7 @@ function! s:insertData(data, template)
                 if l:first_iteration
                     let l:msg = "Cannot replace token '" . l:item['token']
                     let l:msg .= "' -- no value supplied"
-                    call dn#util#warn(l:msg)
+                    call s:dn_util_warn(l:msg)
                 endif
             endif  " exists(l:item['value'])
         endfor  " l:item in a:data
@@ -659,6 +668,48 @@ function! s:insertData(data, template)
     endfor  " l:line in a:template
     " return altered template
     return l:new_template
+endfunction
+
+" s:insertMode([skip])    {{{1
+
+""
+" @public
+" Switch to |Insert-mode|. The right [skip] is an integer number of spaces to
+" the right the cursor should be moved before entering |Insert-mode|. This
+" function is often used by other functions if they were called from insert
+" mode. In such cases it will usually be invoked with one right skip to
+" compensate for the left skip that occured when initially escaping from
+" |Insert-mode|.
+" @default skip=0
+function! s:insertMode(...) abort
+    let l:right_skip = (a:0 > 0 && a:1 > 0)
+                \ ? a:1
+                \ : 0
+    " override skip if cursor at eol to prevent error beep
+    if col('.') >= strlen(getline('.')) | let l:right_skip = 0 | endif
+    " skip right if so instructed
+    if l:right_skip > 0
+        silent execute 'normal! ' . l:right_skip . 'l'
+    endif
+    " handle case where cursor at end of line
+    if col('.') >= strlen(getline('.')) | startinsert! " =~# 'A'
+    else                                | startinsert  " =~# 'i'
+    endif
+endfunction
+
+" s:insertString(string[, paste])    {{{1
+
+""
+" @public
+" Insert {string} at current cursor location. The [paste] argument is a
+" boolean indicating whether to use the 'paste' setting.
+" @default paste=true
+function! s:insertString(inserted_text, ...) abort
+    let l:restrictive = v:true
+    if a:0 > 1 && ! a:1 | let l:restrictive = v:false | endif
+    if l:restrictive | let l:paste_setting = &paste | set paste | endif
+    silent execute 'normal! a' . a:inserted_text
+    if l:restrictive && ! l:paste_setting | set nopaste | endif
 endfunction
 
 " s:resourcesDirIsSet()    {{{1
@@ -678,20 +729,20 @@ function! s:resourcesDirIsSet()
             endif
         endif
     endif
-    let l:var = dn#util#getRtpDir('vim-dn-latex-resources')
+    let l:var = s:dn_util_get_rtp_dir('vim-dn-latex-resources')
     if strlen(l:var) > 0
         if isdirectory(l:var)
             let s:plugin_resources_dir = l:var
             return v:true
         else
             let l:msg = 'Could not find valid plugin resources directory'
-            call dn#util#error(l:msg)
-            call dn#util#error('Plugin resources directory was not set')
+            call s:dn_util_error(l:msg)
+            call s:dn_util_error('Plugin resources directory was not set')
             return v:false
         endif
     else    " empty string returned
-        call dn#util#error('Could not detect plugin resources directory')
-        call dn#util#error('Plugin resources directory was not set')
+        call s:dn_util_error('Could not detect plugin resources directory')
+        call s:dn_util_error('Plugin resources directory was not set')
         return v:false
     endif
 endfunction
@@ -702,16 +753,13 @@ endfunction
 " @private
 " Determines whether dn-utils plugin is loaded.
 function! s:utilsMissing() abort
-    silent! call dn#util#rev()  " load function if available
-    if exists('*dn#util#rev') && dn#util#rev() =~? '\v^\d{8,}$'
-        return v:false
-    else
-        echohl ErrorMsg
-        echomsg 'dn-latex ftplugin cannot find the dn-utils plugin'
-        echomsg 'dn-latex ftplugin requires the dn-utils plugin'
-        echohl NONE
-        return v:true
-    endif
+    let l:found_plugin = v:true
+    try
+      call luaeval('require("dn-utils")')
+    catch
+      let l:found_plugin = v:false
+    endtry
+    return l:found_plugin
 endfunction
 
 " s:validVar(variable, kind)    {{{1
@@ -731,12 +779,12 @@ function! s:validVar(var, kind)
     if a:kind ==# 'template'
         " must be a list
         if type(a:var) != type([])
-            call dn#util#error('Template variable is not a List')
+            call s:dn_util_error('Template variable is not a List')
             return 0
         endif
         " must have content
         if len(a:var) == 0
-            call dn#util#error('Template variable is empty')
+            call s:dn_util_error('Template variable is empty')
             return 0
         endif
         return 1  " success if passed all tests
@@ -766,12 +814,12 @@ function! s:validVar(var, kind)
         let l:allowed = l:required + l:optional
         " must be a list
         if type(a:var) != type([])
-            call dn#util#error(l:name . ' is not a List')
+            call s:dn_util_error(l:name . ' is not a List')
             return 0
         endif
         " must have content
         if len(a:var) == 0
-            call dn#util#error(l:name . ' is empty')
+            call s:dn_util_error(l:name . ' is empty')
             return 0
         endif
         " elements must be dictionaries
@@ -779,9 +827,9 @@ function! s:validVar(var, kind)
         for l:item in a:var
             if type(l:item) != type({})
                 let l:msg = l:name . ' element ' . l:item_count
-                let l:msg .= ' is a ' . dn#util#varType(l:item)
+                let l:msg .= ' is a ' . s:varType(l:item)
                 let l:msg .= ", not a Dictionary:\n" . string(l:item)
-                call dn#util#error(l:msg)
+                call s:dn_util_error(l:msg)
                 return 0
             endif
             unlet l:item
@@ -796,7 +844,7 @@ function! s:validVar(var, kind)
                     let l:msg = l:name . ' element ' . l:item_count
                     let l:msg .= " has invalid key '" . l:key . "':\n"
                     let l:msg .= string(l:item)
-                    call dn#util#error(l:msg)
+                    call s:dn_util_error(l:msg)
                     return 0
                 endif
             endfor
@@ -806,7 +854,7 @@ function! s:validVar(var, kind)
                     let l:msg = l:name . ' element ' . l:item_count
                     let l:msg .= " is missing required key '" . l:key . "':\n"
                     let l:msg .= string(l:item)
-                    call dn#util#error(l:msg)
+                    call s:dn_util_error(l:msg)
                     return 0
                 endif
             endfor
@@ -817,7 +865,7 @@ function! s:validVar(var, kind)
                     let l:msg .= " has a key ('" . l:key
                                 \ . "') with no value:\n"
                     let l:msg .= string(l:item)
-                    call dn#util#error(l:msg)
+                    call s:dn_util_error(l:msg)
                     return 0
                 endif
             endfor
@@ -831,7 +879,7 @@ function! s:validVar(var, kind)
             if l:count > 1
                 let l:msg = l:name . " has multiple copies of this element:\n"
                 let l:msg .= string(l:item)
-                call dn#util#error(l:msg)
+                call s:dn_util_error(l:msg)
                 return 0
             endif
         endfor
@@ -853,7 +901,7 @@ function! s:validVar(var, kind)
                             let l:msg .= "\n" . string(l:item)
                         endif
                     endfor
-                    call dn#util#error(l:msg)
+                    call s:dn_util_error(l:msg)
                     return 0
                 endif
             endfor
@@ -871,16 +919,38 @@ function! s:validVar(var, kind)
                             let l:msg .= "\n" . string(l:item)
                         endif
                     endfor
-                call dn#util#error(l:msg)
+                call s:dn_util_error(l:msg)
                 return 0
             endif
         endfor
         return 1  " success if passed all tests
     else  " invalid a:kind
-        call dn#util#warn("Invalid kind parameter '" . a:kind . "'")
+        call s:dn_util_warn("Invalid kind parameter '" . a:kind . "'")
         return 0
     endif
 endfunction
+
+" s:varType(variable)    {{{1
+
+""
+" @private
+" Get type of {variable} as a string rather than a numeric code as given by
+" |type()|. The possible return values are "number", "string", "funcref",
+" "List", "Dictionary", "float", "boolean" (for |v:true| and |v:false|),
+" "null" (for |v:null|) and "unknown".
+function! s:varType(variable) abort
+    if     type(a:variable) == type(0)              | return 'number'
+    elseif type(a:variable) == type('')             | return 'string'
+    elseif type(a:variable) == type(function('tr')) | return 'funcref'
+    elseif type(a:variable) == type([])             | return 'List'
+    elseif type(a:variable) == type({})             | return 'Dictionary'
+    elseif type(a:variable) == type(0.0)            | return 'float'
+    elseif type(a:variable) == type(v:true)         | return 'boolean'
+    elseif type(a:variable) == type(v:null)         | return 'null'
+    else                                            | return 'unknown'
+    endif
+endfunction
+
 " }}}1
 
 " Private functions
@@ -926,13 +996,13 @@ function! dn#latex#alignTable(...)
     " analyse table to get start and end lines
     let l:start = searchpair(l:start_token, '', l:end_token, 'bW')
     if l:start < 1    " not inside table or error occurred
-        call dn#util#error('Cursor must be inside a table')
+        call s:dn_util_error('Cursor must be inside a table')
         return
     endif
     let l:start += 1
     let l:end = searchpair(l:start_token, '', l:end_token, 'W')
     if l:end < 1
-        call dn#util#error('Unable to find end of table')
+        call s:dn_util_error('Unable to find end of table')
         return
     endif
     let l:end -= 1
@@ -963,7 +1033,7 @@ function! dn#latex#alignTable(...)
     endfor
     " get max number of colseps per line
     for l:line_num in keys(l:data)
-        let l:matches = dn#util#matchCount(l:data[l:line_num], l:col_sep)
+        let l:matches = s:dn_util_match_count(l:data[l:line_num], l:col_sep)
         if l:matches > l:sep_count | let l:sep_count = l:matches | endif
     endfor
     echo l:sep_count
@@ -980,7 +1050,7 @@ function! dn#latex#alignTable(...)
         for l:line_num in keys(l:data)
             let l:pos = match(l:data[l:line_num], l:col_sep, 0, l:loop)
             if l:pos > -1    " if line wrapped may not have col-sep match
-                let l:data[l:line_num] = dn#util#padInternal(
+                let l:data[l:line_num] = s:dn_util_pad_internal(
                             \ l:data[l:line_num], l:pos, l:max_pos
                             \ )
             endif
@@ -995,7 +1065,7 @@ function! dn#latex#alignTable(...)
     " return to where we started
     call setpos('.', l:save_cursor)
     " return to calling mode
-    if l:insert | call dn#util#insertMode() | endif
+    if l:insert | call s:insertMode() | endif
 endfunction
 
 " dn#latex#insertSpecialChar([insert])    {{{1
@@ -1014,10 +1084,10 @@ function! dn#latex#insertSpecialChar(...)
     " variables
     let l:insert = (a:0 && a:1)
     " select special character
-    let l:char = dn#util#menuSelect(s:chars, 'Select character to insert:')
+    let l:char = s:dn_util_menu_select(s:chars, 'Select character to insert:')
     " insert character
-    if l:char !=? '' | call dn#util#insertString(l:char) | endif
-    if l:insert | call dn#util#insertMode() | endif
+    if l:char !=? '' | call s:insertString(l:char) | endif
+    if l:insert | call s:insertMode() | endif
 endfunction
 
 " dn#latex#insertTemplate()    {{{1
@@ -1044,7 +1114,7 @@ function! dn#latex#insertTemplate()
     if search('<START>')
         execute 'normal df>'
     else
-        call dn#util#warn("No start token '<START>' found")
+        call s:dn_util_warn("No start token '<START>' found")
     endif
     " save file
     execute ':write!'
@@ -1060,13 +1130,13 @@ function! dn#latex#syncBeamer()
     if s:utilsMissing() | return | endif  " requires dn-utils plugin
     " only implemented for unix
     if !has('unix')
-        call dn#util#error('Beamer installation not yet '
+        call s:dn_util_error('Beamer installation not yet '
                     \      . 'implemented on this OS')
         return v:false
     endif
     " need rsync
     if !executable('rsync')
-        call dn#util#error("Need 'rsync' to synchronise beamer files")
+        call s:dn_util_error("Need 'rsync' to synchronise beamer files")
         return v:false
     endif
     " set source directory
@@ -1084,14 +1154,14 @@ function! dn#latex#syncBeamer()
                 \ . '| grep -v "^\."'
     let l:changes = system(l:cmd)
     if v:shell_error
-        call dn#util#error('Error occurred while syncing beamer files:')
-        call dn#util#error('------------------------------------------')
-        call dn#util#error(v:shell_error)
-        call dn#util#error('------------------------------------------')
+        call s:dn_util_error('Error occurred while syncing beamer files:')
+        call s:dn_util_error('------------------------------------------')
+        call s:dn_util_error(v:shell_error)
+        call s:dn_util_error('------------------------------------------')
         return v:false
     endif
     if !isdirectory(l:target)
-        call dn#util#error('Failed to create TEXMFHOME directory')
+        call s:dn_util_error('Failed to create TEXMFHOME directory')
         return v:false
     endif
     " update local tex ls-R database if changes made to beamer files
@@ -1099,12 +1169,12 @@ function! dn#latex#syncBeamer()
         let l:cmd = 'mktexlsr ' . strpart(l:target, 0, strlen(l:target)-1)
         call system(l:cmd)
         if v:shell_error
-            call dn#util#error('Error occurred while updating '
+            call s:dn_util_error('Error occurred while updating '
                         \      . 'local tex ls-R db:')
-            call dn#util#error('--------------------------'
+            call s:dn_util_error('--------------------------'
                         \      . '----------------------')
-            call dn#util#error(v:shell_error)
-            call dn#util#error('--------------------------'
+            call s:dn_util_error(v:shell_error)
+            call s:dn_util_error('--------------------------'
                         \      . '----------------------')
             return v:false
         endif
